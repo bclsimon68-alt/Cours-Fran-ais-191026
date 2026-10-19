@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Modules FLE B2 — Atelier interactif</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1A3A5C; --navy-dark:#0D2137; --gold:#D4AC0D; --gold-soft:#F3E8C2;
+    --green:#1E8449; --green-bg:#E8F8EF; --paper:#FAF8F3; --ink:#1F2A37; --line:#D8E0E8;
+    --shadow: 0 10px 30px rgba(13,33,55,.10);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.55;}
+  .wrap{max-width:880px;margin:0 auto;padding:36px 20px 80px;}
+
+  header.top{display:flex;align-items:center;gap:16px;margin-bottom:8px;}
+  .crest{width:46px;height:46px;border-radius:50%;background:linear-gradient(160deg,var(--navy),var(--navy-dark));
+    display:flex;align-items:center;justify-content:center;color:var(--gold);font-family:'Source Serif 4',serif;font-weight:700;font-size:18px;flex:none;}
+  h1{font-family:'Source Serif 4',serif;font-weight:700;font-size:28px;margin:0;color:var(--navy);}
+  .kicker{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#8A93A0;margin:0 0 2px;}
+
+  .tabs{display:flex;gap:10px;margin:30px 0 22px;border-bottom:2px solid var(--line);}
+  .tab{cursor:pointer;padding:12px 18px 14px;font-family:'Source Serif 4',serif;font-size:16px;font-weight:600;
+    color:#8A93A0;border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s;}
+  .tab:hover{color:var(--navy);}
+  .tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+  .tab .num{display:inline-block;width:20px;height:20px;border-radius:50%;background:var(--gold-soft);color:var(--navy);
+    font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-align:center;line-height:20px;margin-right:8px;}
+
+  .module{display:none;}
+  .module.active{display:block;animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .theme-banner{background:linear-gradient(120deg,var(--navy),var(--navy-dark));border-radius:14px;padding:24px 26px;
+    color:#fff;box-shadow:var(--shadow);margin-bottom:24px;}
+  .theme-banner .badge{display:inline-block;background:var(--gold);color:var(--navy-dark);font-weight:700;font-size:11px;
+    letter-spacing:.08em;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+  .theme-banner h2{font-family:'Source Serif 4',serif;font-size:22px;margin:0;line-height:1.3;}
+
+  .progress{display:flex;gap:5px;margin:14px 0 28px;}
+  .progress .seg{flex:1;height:5px;border-radius:3px;background:var(--line);overflow:hidden;}
+  .progress .seg i{display:block;height:100%;width:0;background:var(--gold);transition:width .4s;}
+
+  section.block{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:18px;overflow:hidden;box-shadow:0 1px 3px rgba(13,33,55,.04);}
+  .block-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;background:#fff;}
+  .block-head:hover{background:#FBFAF6;}
+  .block-head .title{display:flex;align-items:center;gap:12px;font-family:'Source Serif 4',serif;font-weight:600;font-size:17px;color:var(--navy);}
+  .block-head .num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:'Inter';font-size:12px;
+    font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;}
+  .chev{transition:transform .25s;color:#8A93A0;}
+  section.block.open .chev{transform:rotate(180deg);}
+  .block-body{max-height:0;overflow:hidden;transition:max-height .35s ease;}
+  section.block.open .block-body{max-height:20000px;}
+  .block-inner{padding:4px 20px 22px;}
+
+  .texte p{font-size:15px;color:#2C3A4A;text-align:justify;margin:0 0 12px;}
+  .consigne{font-style:italic;color:#5C6B7A;font-size:13.5px;margin-bottom:14px;}
+
+  .q{margin-bottom:16px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;}
+  .q .qtext{font-weight:600;font-size:14.5px;color:var(--ink);margin-bottom:8px;}
+  .answer-box{display:none;background:var(--green-bg);border:1px solid var(--gold);border-radius:8px;padding:10px 12px;
+    color:var(--green);font-size:13.5px;font-weight:500;margin-top:8px;}
+  .answer-box.show{display:block;}
+  .reveal-btn{font-family:'Inter';font-size:12px;font-weight:600;color:var(--navy);background:var(--gold-soft);
+    border:none;padding:6px 12px;border-radius:20px;cursor:pointer;transition:.15s;}
+  .reveal-btn:hover{background:var(--gold);}
+
+  .vocab-ex{margin-bottom:22px;}
+  .vocab-ex h4{font-family:'Source Serif 4',serif;font-size:14.5px;color:var(--navy);margin:0 0 6px;border-left:3px solid var(--gold);padding-left:8px;}
+  .vocab-ex.green h4{border-left-color:var(--green);}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;}
+  .chip{background:#F1F4F8;border:1px solid var(--line);border-radius:8px;padding:7px 11px;font-size:13px;cursor:pointer;position:relative;}
+  .chip .pop{display:none;position:absolute;left:0;top:110%;background:var(--navy-dark);color:#fff;padding:7px 10px;border-radius:7px;
+    font-size:12px;white-space:normal;width:max-content;max-width:240px;z-index:5;box-shadow:var(--shadow);}
+  .chip.open .pop{display:block;}
+  table.fam{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  table.fam th{background:var(--navy);color:#fff;padding:7px 9px;text-align:left;font-weight:600;}
+  table.fam td{padding:7px 9px;border-bottom:1px solid var(--line);}
+  .fam-input{width:90%;font-family:'Inter';font-size:12.5px;border:1px solid var(--line);border-radius:5px;padding:4px 6px;}
+  .fam-input:focus{outline:none;border-color:var(--navy);}
+  table.corr-table{display:none;}
+  table.corr-table.show{display:table;}
+  table.corr-table td{background:var(--green-bg);color:var(--green);font-weight:600;}
+  table.corr-table th{background:var(--green);}
+  .match-cols{display:flex;gap:24px;margin-top:6px;}
+  .match-col{flex:1;}
+  .match-col h5{font-family:'Source Serif 4',serif;font-size:13px;color:var(--navy);margin:0 0 6px;}
+  .match-line{font-size:13px;padding:6px 9px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;background:#FBFAF6;}
+  .match-answers{margin-top:10px;}
+  .vocab-input-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .vi-word{min-width:140px;font-weight:600;font-size:13.5px;color:var(--ink);}
+  .vocab-input-row.sentence{flex-direction:column;align-items:stretch;background:#FBFAF6;border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;}
+  .vocab-input-row.sentence .vi-word{min-width:0;font-weight:500;font-size:13.5px;margin-bottom:6px;}
+  .vi-field{flex:1;font-family:'Inter';font-size:13px;border:1px solid var(--line);border-radius:6px;padding:6px 9px;}
+  .vi-field:focus{outline:none;border-color:var(--navy);}
+  .vocab-corr-box{margin-top:6px;}
+  .expl-inline{font-size:12px; color:var(--green); opacity:0.85; margin-top:3px; font-style:italic;}
+
+  .gram-item{margin-bottom:12px;}
+  .gram-item .phrase{font-size:13.8px;}
+  .gram-item input{font-family:'Inter';font-size:13px;border:none;border-bottom:1px dotted #A9B4C0;padding:2px 4px;width:160px;background:transparent;}
+  .gram-item input:focus{outline:none;border-color:var(--navy);}
+  .check-btn{font-family:'Inter';font-size:11.5px;font-weight:600;color:#fff;background:var(--navy);border:none;
+    padding:4px 10px;border-radius:14px;cursor:pointer;margin-left:6px;}
+  .gram-feedback{font-size:12.5px;margin-top:5px;display:none;}
+  .speak-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:8px;
+    border:none;background:rgba(255,255,255,.55);border-radius:50%;cursor:pointer;font-size:12px;vertical-align:middle;
+    box-shadow:0 1px 2px rgba(0,0,0,.15);flex:none;}
+  .speak-btn:hover{background:#fff;}
+  .speak-btn.playing{background:var(--gold);}
+  .corr-table td, .pop{position:relative;}
+  .gram-feedback.ok{color:var(--green);display:block;}
+  .gram-feedback.no{color:#B5454A;display:block;}
+  .expl{display:none;background:var(--gold-soft);border-radius:7px;padding:7px 10px;font-size:12px;color:#5C4A0A;margin-top:5px;}
+  .expl.show{display:block;}
+
+  .reform-item{border-left:3px solid var(--navy);padding-left:12px;margin-bottom:16px;}
+  .technique{font-size:12px;color:var(--gold);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+
+  .expr-box{background:#FBFAF6;border:1px dashed var(--line);border-radius:10px;padding:16px;}
+  textarea{width:100%;min-height:140px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:'Inter';font-size:13.5px;resize:vertical;}
+  .wordcount{font-size:12px;color:#8A93A0;text-align:right;margin-top:4px;}
+  .grille{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px;}
+  .grille th{background:var(--navy);color:#fff;padding:8px;text-align:left;}
+  .grille td{padding:8px;border-bottom:1px solid var(--line);}
+  .model-toggle{margin-top:16px;}
+  .model-box{display:none;margin-top:12px;background:var(--green-bg);border:1px solid var(--gold);border-radius:10px;padding:16px;font-size:13.5px;}
+  .model-box.show{display:block;}
+  .model-box p{margin:0 0 10px;text-align:justify;}
+
+  footer{text-align:center;color:#9AA4B0;font-size:12px;margin-top:30px;}
+
+  /* ---- Module QCM / Vrai-Faux ---- */
+  .qcm-scorebar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:14px;font-weight:600;color:var(--navy);}
+  .qcm-total{font-size:20px;font-weight:700;}
+  .qcm-sec-head{font-size:13px;color:#5C6B7A;margin-bottom:12px;}
+  .qcm-sec-score{font-weight:700;color:var(--navy);}
+  .qcm-q{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#fff;}
+  .qcm-qtext{font-weight:600;font-size:14.5px;margin-bottom:10px;line-height:1.45;}
+  .qcm-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    padding:2px 8px;border-radius:10px;margin-right:6px;vertical-align:1px;}
+  .qcm-tag.qcm{background:var(--gold-soft);color:var(--navy);}
+  .qcm-tag.vf{background:#E3ECF7;color:var(--navy);}
+  .qcm-opts{display:flex;flex-direction:column;gap:7px;}
+  .qcm-opts.vf{flex-direction:row;}
+  .qcm-opts.vf .qcm-opt{flex:1;}
+  .qcm-opt{display:flex;align-items:center;gap:10px;text-align:left;font-family:'Inter',sans-serif;font-size:13.5px;
+    color:var(--ink);background:#FBFAF6;border:1px solid var(--line);border-radius:8px;padding:9px 12px;cursor:pointer;transition:.15s;}
+  .qcm-opt:hover:not(:disabled){border-color:var(--navy);background:#F3F6FA;}
+  .qcm-letter{flex:none;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;
+    font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .qcm-opt:disabled{cursor:default;color:var(--ink);}
+  .qcm-opt:disabled:not(.ok):not(.ko){opacity:.6;}
+  .qcm-opt.ok{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600;}
+  .qcm-opt.ko{background:#FBEAEA;border-color:#B5454A;color:#B5454A;}
+  .qcm-fb{display:none;margin-top:10px;font-size:13px;border-radius:8px;padding:10px 12px;line-height:1.45;}
+  .qcm-fb.show{display:block;}
+  .qcm-fb.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--gold);}
+  .qcm-fb.ko{background:#FDF3E3;color:#7A4B00;border:1px solid var(--gold);}
+  .qcm-why{margin-top:4px;font-style:italic;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="crest">B2</div>
+    <div style="flex:1;">
+      <p class="kicker">Cours FLE — Niveau B2</p>
+      <h1>Atelier de compréhension &amp; d'expression</h1>
+    </div>
+    <button id="resetBtn" style="font-family:'Inter';font-size:11.5px;font-weight:600;color:#8A93A0;background:none;
+      border:1px solid var(--line);padding:6px 12px;border-radius:20px;cursor:pointer;">Réinitialiser ma progression</button>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="modules"></div>
+
+  <footer>Cliquez sur une section pour l'ouvrir, sur « Voir la réponse » pour vérifier · votre progression et vos réponses sont sauvegardées automatiquement dans ce navigateur.</footer>
+</div>
+
+<script>
+const DATA = [
+{
+  slug:"climat_faune", titre:"Module 1", theme:"Le dérèglement climatique et ses conséquences sur la faune sauvage",
+  texte:[
+"Le réchauffement climatique ne modifie pas seulement les paysages ; il bouleverse en profondeur les équilibres qui régissent la faune sauvage. Des pôles aux tropiques, des espèces entières voient leur habitat se réduire à un rythme que la science peine encore à mesurer précisément.",
+"Chez les ours polaires, la fonte accélérée de la banquise réduit le territoire de chasse et menace directement leur survie ; chez les coraux, l'élévation de la température des océans provoque un blanchissement massif qui prive des milliers d'espèces marines de leur habitat naturel. Plusieurs espèces migratoires voient également leurs cycles perturbés, arrivant trop tôt ou trop tard sur des territoires dont les ressources ne sont plus synchronisées avec leurs besoins.",
+"Il est indispensable que les politiques de conservation prennent en compte cette dimension climatique, sans quoi les efforts de préservation resteront vains. Bien que certaines espèces parviennent à s'adapter en migrant vers des zones plus fraîches, la majorité d'entre elles n'ont ni le temps ni l'espace nécessaires pour suivre ce rythme effréné.",
+"Face à cette hémorragie silencieuse de la biodiversité, des solutions existent : corridors écologiques, restauration des habitats, réduction drastique des émissions. Encore faut-il que la communauté internationale s'accorde sur l'urgence d'agir avant que certains équilibres ne deviennent irréversibles."
+],
+  comprehension:[
+   ["Quels sont les deux exemples d'espèces directement touchées par le réchauffement climatique cités dans le deuxième paragraphe ?","Les ours polaires, menacés par la fonte de la banquise, et les coraux, touchés par le blanchissement dû à l'élévation de la température des océans."],
+   ["Pourquoi les cycles des espèces migratoires sont-ils perturbés ?","Parce qu'elles arrivent trop tôt ou trop tard sur des territoires dont les ressources ne sont plus synchronisées avec leurs besoins."],
+   ["Quelles solutions sont évoquées dans le dernier paragraphe pour protéger la biodiversité ?","Les corridors écologiques, la restauration des habitats et la réduction drastique des émissions."],
+   ["Quelle est l'idée principale du troisième paragraphe ?","Les politiques de conservation doivent intégrer la dimension climatique, car la majorité des espèces ne peuvent s'adapter assez vite."],
+   ["Quel contraste l'auteur établit-il concernant la capacité d'adaptation des espèces ?","Il oppose les quelques espèces capables de migrer vers des zones plus fraîches à la majorité qui n'a ni le temps ni l'espace pour s'adapter."],
+   ["Quelle est l'intention de l'auteur en concluant sur l'urgence d'un accord international ?","Il souligne que les solutions techniques existent déjà mais restent inefficaces sans une volonté politique collective et rapide."],
+   ["Que signifie l'expression « cette hémorragie silencieuse de la biodiversité » employée dans le texte ?","Une perte massive et continue d'espèces qui passe largement inaperçue du grand public."],
+   ["En quoi l'expression « avant que certains équilibres ne deviennent irréversibles » illustre-t-elle l'urgence évoquée par l'auteur ?","Elle souligne qu'un point de non-retour existe, au-delà duquel certains dommages ne pourront plus être réparés."]
+  ],
+  vocab:[
+   {titre:"1. Synonymes", input:true, consigne:"Trouvez un synonyme pour chaque mot du texte.",items:["bouleverse","blanchissement","effréné","irréversibles"],corr:["transforme profondément","décoloration (des coraux)","très rapide, incontrôlé","définitifs, sans retour possible"]},
+   {titre:"2. Antonymes", input:true, consigne:"Donnez un antonyme pour chaque terme.",items:["accélérée","synchronisées","drastique","silencieuse"],corr:["ralentie","désynchronisées, décalées","légère, modérée","visible, médiatisée"]},
+   {titre:"3. Famille de mots",consigne:"Verbe / Nom / Adjectif.",table:[["réchauffer","réchauffement","réchauffé"],["menacer","menace","menacé"],["adapter","adaptation","adapté"],["restaurer","restauration","restauré"],["préserver","préservation","préservé"]]},
+   {titre:"4. Collocations",consigne:"Associez chaque verbe à son complément.",items:["fondre","blanchir","perturber","réduire","restaurer"],corr:["fondre → la banquise","blanchir → les coraux","perturber → les cycles migratoires","réduire → les émissions","restaurer → les habitats naturels"]},
+   {titre:"5. Expressions et sens figuré",consigne:"Expliquez le sens des expressions suivantes.",items:["cette hémorragie silencieuse de la biodiversité","avant que certains équilibres ne deviennent irréversibles","un rythme effréné","des pôles aux tropiques"],corr:["Une perte massive et continue d'espèces, largement invisible du grand public.","Avant qu'un point de non-retour ne soit atteint.","Une vitesse très rapide, presque incontrôlable.","Du monde entier, sans exception géographique."]},
+   {titre:"6. Articles et prépositions", input:true, consigne:"Complétez avec l'article ou la préposition qui convient.",items:["Le réchauffement climatique bouleverse ___ équilibres ___ la faune sauvage.","Cette étude porte ___ l'impact du climat ___ les espèces marines.","Les ours polaires sont exposés ___ une réduction de leur territoire.","Il est essentiel d'investir ___ des corridors écologiques.","Les scientifiques doivent rendre compte ___ leurs observations."],corr:["les / de","sur / sur","à","dans","de"],
+    expl:["« les » : article défini pluriel (généralité) · « de » : possession.","« porter sur » : construction fixe, répétée deux fois ici.","« exposé à » : construction adjectivale fixe.","« investir dans » : construction verbale fixe.","« rendre compte de » : construction verbale fixe."]},
+   {titre:"7. Connecteurs logiques", input:true, green:true,consigne:"Complétez avec : néanmoins, dans la mesure où, de sorte que, quand bien même, dès lors que.",items:["___ certaines espèces s'adapteraient rapidement, la majorité resterait menacée.","La banquise fond rapidement, ___ les ours polaires perdent leur territoire de chasse.","Cette situation est alarmante ___ elle touche des écosystèmes entiers.","Des solutions existent ; ___, leur mise en œuvre reste insuffisante.","___ un habitat disparaît, c'est tout un écosystème qui se fragilise."],corr:["Quand bien même","de sorte que","dans la mesure où","néanmoins","Dès lors que"],
+    expl:["« quand bien même » + conditionnel (s'adapteraient) : concession hypothétique forte.","« de sorte que » introduit la conséquence.","« dans la mesure où » introduit la cause/justification.","« néanmoins » marque l'opposition avec ce qui précède.","« dès lors que » = du moment où (condition/cause réalisée)."]},
+   {titre:"8. Reformulation de définitions",consigne:"Reformulez avec vos propres mots.",items:["dérèglement climatique","corridor écologique","blanchissement corallien","espèce menacée"],corr:["Modification durable des conditions climatiques mondiales, notamment liée aux activités humaines.","Espace naturel reliant deux habitats et permettant aux espèces de circuler.","Décoloration des coraux causée par le stress thermique, souvent mortelle.","Espèce dont la population décline au point de risquer la disparition."]}
+  ],
+  grammar:[
+   {code:"G1",titre:"Subjonctif présent",consigne:"Conjuguez au subjonctif présent.",items:["Il est indispensable que les politiques de conservation (prendre) en compte la dimension climatique.","Bien que certaines espèces (parvenir) à s'adapter, la majorité reste vulnérable.","Il faut que la communauté internationale (s'accorder) sur l'urgence d'agir.","Je doute que ces mesures (suffire) à enrayer le déclin de la biodiversité."],corr:["prennent","parviennent","s'accorde","suffisent"],expl:["nécessité impersonnelle + subjonctif","concession (bien que) + subjonctif","obligation impersonnelle + subjonctif","doute + subjonctif"]},
+   {code:"G2",titre:"Conditionnel présent / passé",consigne:"Conjuguez au conditionnel.",items:["Si les émissions diminuaient rapidement, les écosystèmes (avoir) plus de temps pour s'adapter.","Si l'on avait agi plus tôt, certaines espèces (ne pas disparaître) déjà.","Sans corridors écologiques, ces populations (survivre)-elles encore longtemps ?","Si j'avais pu, je (participer) à ce programme de conservation."],corr:["auraient","n'auraient pas déjà disparu","survivraient","aurais participé"],expl:["si+imparfait → cond. présent","si+PQP → cond. passé","hypothèse implicite au présent","si+PQP → cond. passé"]},
+   {code:"G3",titre:"Connecteurs — reformulation",consigne:"Reformulez avec le connecteur indiqué.",items:["La banquise fond. Les ours perdent leur territoire. (de sorte que)","Les solutions existent. La volonté politique manque. (certes... mais)","Le climat se réchauffe. Les espèces migrent plus tôt. (à mesure que)","Les coraux blanchissent. Ils continuent d'abriter une vie marine réduite. (tout en)"],corr:["La banquise fond, de sorte que les ours perdent leur territoire.","Certes les solutions existent, mais la volonté politique manque.","À mesure que le climat se réchauffe, les espèces migrent plus tôt.","Les coraux blanchissent, tout en continuant d'abriter une vie marine réduite."],expl:["« de sorte que » introduit la conséquence.","structure concessive corrélative.","progression parallèle de deux faits.","« tout en » + gérondif : simultanéité concessive."]},
+   {code:"G4",titre:"Discours indirect",consigne:"Transposez au discours indirect.",items:["Une biologiste a déclaré : « Nous perdons des espèces à un rythme sans précédent. »","Un journaliste a demandé : « Peut-on encore inverser cette tendance ? »","Le rapport a affirmé : « Les politiques actuelles restent insuffisantes. »","L'experte a conseillé : « Investissez davantage dans les corridors écologiques. »"],corr:["Une biologiste a déclaré qu'ils perdaient des espèces à un rythme sans précédent.","Un journaliste a demandé si l'on pouvait encore inverser cette tendance.","Le rapport a affirmé que les politiques actuelles restaient insuffisantes.","L'experte a conseillé d'investir davantage dans les corridors écologiques."],expl:["présent → imparfait","question fermée : inversion → « si »","présent → imparfait (concordance)","impératif → infinitif précédé de « de »"]},
+   {code:"G5",titre:"PC / Imparfait / PQP",consigne:"Conjuguez au temps du passé qui convient.",items:["Quand les scientifiques (publier – PC) ce rapport, l'opinion publique a été choquée.","À l'époque, on (ne pas mesurer – imparfait) l'ampleur du phénomène.","Cette espèce (ne jamais migrer – PQP) aussi loin avant que son habitat ne se dégrade.","Les chercheurs (observer – PC) un phénomène qu'ils (soupçonner – imparfait) depuis longtemps."],corr:["ont publié","ne mesurait pas","n'avait jamais migré","ont observé / soupçonnaient"],expl:["action ponctuelle achevée","description d'un état","antériorité par rapport à une autre action passée","PC (action) / imparfait (toile de fond)"]},
+   {code:"G6",titre:"Voix passive",consigne:"Transformez à la voix passive.",items:["Le réchauffement climatique menace de nombreuses espèces.","Les scientifiques ont observé un déclin alarmant de la biodiversité.","On devra renforcer ces mesures de protection."],corr:["De nombreuses espèces sont menacées par le réchauffement climatique.","Un déclin alarmant de la biodiversité a été observé par les scientifiques.","Ces mesures de protection devront être renforcées."],expl:["présent actif → présent passif","PC actif → PC passif","devoir + infinitif actif → devoir + infinitif passif"]},
+   {code:"G7",titre:"Nominalisation",consigne:"Remplacez le verbe par un nom.",items:["Les espèces s'adaptent difficilement à ce changement rapide.","Les scientifiques observent attentivement ces phénomènes.","Les gouvernements régulent peu ces pratiques polluantes.","Le public prend conscience progressivement de l'urgence climatique."],corr:["L'adaptation difficile des espèces à ce changement rapide.","L'observation attentive de ces phénomènes par les scientifiques.","La faible régulation de ces pratiques polluantes par les gouvernements.","La prise de conscience progressive de l'urgence climatique par le public."],expl:["« s'adapter » → « l'adaptation »","« observer » → « l'observation »","« réguler » → « la régulation » ; « peu » devient « faible »","« prendre conscience » → « la prise de conscience »"]},
+   {code:"G8",titre:"Prépositions",consigne:"Complétez avec la préposition qui convient.",items:["Cette étude porte ___ les conséquences du réchauffement sur la faune.","Les espèces marines sont exposées ___ un stress thermique croissant.","Il est urgent d'investir ___ des solutions de conservation.","Les gouvernements doivent rendre compte ___ leurs engagements climatiques.","Ce phénomène se manifeste ___ multiples façons."],corr:["sur","à","dans","de","de"],expl:["« porter sur » : fixe","« exposé à » : fixe","« investir dans » : fixe","« rendre compte de » : fixe","« se manifester de multiples façons » : locution figée"]}
+  ],
+  reformulation:[
+   ["Le réchauffement climatique menace la faune sauvage.","nominalisation","La menace du réchauffement climatique sur la faune sauvage est manifeste."],
+   ["Les scientifiques observent un déclin alarmant.","voix passive","Un déclin alarmant est observé par les scientifiques."],
+   ["Les solutions existent ; la volonté manque.","connecteur d'opposition","Si les solutions existent, la volonté, elle, fait défaut."],
+   ["On ne peut ignorer l'urgence climatique pour la biodiversité.","forme impersonnelle","Il est impossible d'ignorer l'urgence climatique pour la biodiversité."],
+   ["Le climat se réchauffe vite ; les espèces ne s'adaptent plus.","de sorte que","Le climat se réchauffe vite, de sorte que les espèces ne s'adaptent plus."]
+  ],
+  expression:{sujet:"Pensez-vous que la protection de la biodiversité devrait primer sur les intérêts économiques à court terme ? Répondez dans un texte argumenté d'environ 250 mots.",
+   consignes:["Thèse claire dès l'introduction","2 à 3 arguments illustrés d'exemples","Style soutenu, registre B2","Conclusion ouverte"],
+   grille:[["Cohérence et structure","5/5"],["Richesse lexicale","4/5"],["Maîtrise grammaticale","5/5"],["Orthographe","5/5"]],
+   modele:"Opposer systématiquement protection de la biodiversité et intérêts économiques relèverait d'une vision trop simpliste des enjeux contemporains.\n\nIl est vrai que de nombreux secteurs économiques reposent sur l'exploitation des ressources naturelles, qu'il s'agisse de l'agriculture intensive, de l'exploitation forestière ou de la pêche industrielle. Imposer des restrictions environnementales strictes peut ainsi menacer des emplois et fragiliser des économies locales déjà vulnérables, en particulier dans les pays en développement.\n\nPour autant, sacrifier la biodiversité sur l'autel de la croissance à court terme relève d'un calcul dangereux. Les écosystèmes rendent des services essentiels — pollinisation, régulation du climat, purification de l'eau — dont dépend, in fine, l'activité économique elle-même. Une forêt détruite aujourd'hui prive demain une région entière de ressources qu'elle ne pourra plus jamais exploiter.\n\nLa véritable question n'est donc pas de choisir entre économie et environnement, mais de repenser les modèles économiques pour qu'ils intègrent la valeur du vivant. Cela suppose des investissements massifs dans les énergies propres, une fiscalité incitative pour les pratiques durables, et une coopération internationale à la hauteur de l'urgence.\n\nEn définitive, protéger la biodiversité n'est pas un luxe que seuls les pays riches pourraient s'offrir, mais une condition de la prospérité économique de long terme."}
+},
+{
+  slug:"crises_ukraine_iran", titre:"Module 2", theme:"Les conséquences économiques des crises en Ukraine et en Iran",
+  texte:[
+"Depuis 2022, les tensions géopolitiques en Ukraine et, plus récemment, autour de l'Iran ont profondément redessiné les équilibres économiques mondiaux. Loin de rester circonscrits aux zones de conflit, ces bouleversements se répercutent sur les marchés de l'énergie, les chaînes d'approvisionnement et le pouvoir d'achat de millions de ménages à travers le monde.",
+"La guerre en Ukraine a notamment perturbé les exportations mondiales de céréales, l'Ukraine étant l'un des principaux fournisseurs de blé et de maïs de la planète. Parallèlement, les sanctions visant la Russie et les incertitudes entourant le programme iranien ont provoqué d'importantes fluctuations sur les marchés pétroliers et gaziers, entraînant une hausse généralisée des prix de l'énergie.",
+"Il n'est guère surprenant que cette combinaison de facteurs ait alimenté une inflation durable dans de nombreux pays importateurs. Bien que certains gouvernements aient mis en place des mesures de soutien au pouvoir d'achat, ces dispositifs peinent à compenser entièrement la hausse du coût de la vie, notamment pour les ménages les plus modestes.",
+"Ces crises successives ont également accéléré une réflexion sur la souveraineté économique et énergétique de nombreux pays, poussant certains à diversifier leurs sources d'approvisionnement et à investir davantage dans les énergies renouvelables. Reste à savoir si ces ajustements suffiront à prémunir les économies mondiales contre de futurs chocs géopolitiques."
+],
+  comprehension:[
+   ["Depuis quelle année les tensions évoquées ont-elles commencé à redessiner les équilibres économiques mondiaux ?","Depuis 2022."],
+   ["Pourquoi la guerre en Ukraine a-t-elle perturbé les exportations mondiales de céréales ?","Parce que l'Ukraine est l'un des principaux fournisseurs mondiaux de blé et de maïs."],
+   ["Quels sont les deux facteurs ayant provoqué une hausse des prix de l'énergie selon le texte ?","Les sanctions visant la Russie et les incertitudes entourant le programme iranien."],
+   ["Quelle est l'idée principale du troisième paragraphe ?","Ces facteurs combinés ont alimenté une inflation durable que les mesures de soutien gouvernementales peinent à compenser."],
+   ["Quel contraste l'auteur établit-il concernant les mesures de soutien au pouvoir d'achat ?","Il oppose leur mise en place par certains gouvernements à leur incapacité à compenser entièrement la hausse du coût de la vie."],
+   ["Quelle réflexion ces crises ont-elles accélérée, selon la conclusion ?","Une réflexion sur la souveraineté économique et énergétique, poussant à diversifier les approvisionnements et à investir dans les renouvelables."],
+   ["Que signifie l'expression « loin de rester circonscrits aux zones de conflit » employée dans le texte ?","Que les effets de ces crises dépassent largement les régions directement touchées pour affecter l'économie mondiale."],
+   ["En quoi l'expression « prémunir les économies mondiales contre de futurs chocs géopolitiques » illustre-t-elle la position de l'auteur en conclusion ?","Elle montre une position prudente : rien ne garantit que les ajustements actuels suffiront face à de nouvelles crises."]
+  ],
+  vocab:[
+   {titre:"1. Synonymes", input:true, consigne:"Trouvez un synonyme pour chaque mot du texte.",items:["circonscrits","fluctuations","guère","prémunir"],corr:["limités, cantonnés","variations, oscillations","peu, pas vraiment","protéger, mettre à l'abri"]},
+   {titre:"2. Antonymes", input:true, consigne:"Donnez un antonyme pour chaque terme.",items:["perturbé","durable","modestes","diversifier"],corr:["stabilisé","passagère, temporaire","aisés, favorisés","uniformiser, restreindre"]},
+   {titre:"3. Famille de mots",consigne:"Verbe / Nom / Adjectif.",table:[["importer","importation","importé"],["exporter","exportation","exporté"],["sanctionner","sanction","sanctionné"],["approvisionner","approvisionnement","approvisionné"],["investir","investissement","investi"]]},
+   {titre:"4. Collocations",consigne:"Associez chaque verbe à son complément.",items:["perturber","alimenter","peser","diversifier","investir"],corr:["perturber → les exportations","alimenter → l'inflation","peser → sur le pouvoir d'achat","diversifier → les sources d'approvisionnement","investir → dans les énergies renouvelables"]},
+   {titre:"5. Expressions et sens figuré",consigne:"Expliquez le sens des expressions suivantes.",items:["loin de rester circonscrits","redessiner les équilibres économiques","peinent à compenser","prémunir les économies"],corr:["Dépasser largement les frontières de la zone touchée.","Transformer profondément l'organisation économique mondiale.","Ont beaucoup de difficulté à compenser entièrement.","Protéger à l'avance les économies contre un risque futur."]},
+   {titre:"6. Articles et prépositions", input:true, consigne:"Complétez avec l'article ou la préposition qui convient.",items:["Ces tensions se répercutent ___ les marchés ___ l'énergie.","Cette étude porte ___ l'impact économique ___ ces crises.","Les ménages modestes sont exposés ___ une hausse du coût de la vie.","Il est essentiel d'investir ___ les énergies renouvelables.","Les gouvernements doivent rendre compte ___ leurs choix économiques."],corr:["sur / de","sur / de","à","dans","de"],
+    expl:["« se répercuter sur » : construction fixe · « de » : possession.","« porter sur » : construction fixe · « de » : possession.","« exposé à » : construction adjectivale fixe.","« investir dans » : construction verbale fixe.","« rendre compte de » : construction verbale fixe."]},
+   {titre:"7. Connecteurs logiques", input:true, green:true,consigne:"Complétez avec : néanmoins, dans la mesure où, de sorte que, quand bien même, dès lors que.",items:["___ les prix baisseraient prochainement, l'inflation aurait déjà fragilisé de nombreux ménages.","Les exportations de céréales ont chuté, ___ les prix alimentaires ont fortement augmenté.","Cette situation est préoccupante ___ elle touche des millions de ménages.","Des mesures de soutien existent ; ___, elles restent insuffisantes.","___ une source d'approvisionnement devient incertaine, les pays cherchent des alternatives."],corr:["Quand bien même","de sorte que","dans la mesure où","néanmoins","Dès lors que"],
+    expl:["« quand bien même » + conditionnel (baisseraient) : concession hypothétique forte.","« de sorte que » introduit la conséquence.","« dans la mesure où » introduit la cause/justification.","« néanmoins » marque l'opposition avec ce qui précède.","« dès lors que » = du moment où (condition/cause réalisée)."]},
+   {titre:"8. Reformulation de définitions",consigne:"Reformulez avec vos propres mots.",items:["sanction économique","souveraineté énergétique","inflation importée","chaîne d'approvisionnement"],corr:["Mesure restrictive prise par un État ou une organisation pour faire pression sur un autre État.","Capacité d'un pays à assurer ses besoins en énergie sans dépendre excessivement de l'étranger.","Hausse des prix intérieurs causée par l'augmentation du coût des biens importés.","Ensemble des étapes permettant d'acheminer un produit du fournisseur jusqu'au consommateur."]}
+  ],
+  grammar:[
+   {code:"G1",titre:"Subjonctif présent",consigne:"Conjuguez au subjonctif présent.",items:["Il n'est guère surprenant que cette crise (alimenter) une inflation durable.","Bien que certains gouvernements (mettre) en place des aides, elles restent insuffisantes.","Il faut que les pays (diversifier) leurs sources d'approvisionnement.","Je doute que ces mesures (suffire) à enrayer l'inflation."],corr:["alimente","mettent","diversifient","suffisent"],expl:["doute/improbabilité + subjonctif","concession (bien que) + subjonctif","obligation impersonnelle + subjonctif","doute + subjonctif"]},
+   {code:"G2",titre:"Conditionnel présent / passé",consigne:"Conjuguez au conditionnel.",items:["Si les tensions s'apaisaient, les prix de l'énergie (baisser) rapidement.","Si les pays avaient anticipé ces crises, leur dépendance énergétique (être) moindre aujourd'hui.","Sans diversification des approvisionnements, cette vulnérabilité (persister)-elle longtemps ?","Si j'avais suivi ces marchés plus tôt, j' (anticiper) cette hausse des prix."],corr:["baisseraient","serait","persisterait","aurais anticipé"],expl:["si+imparfait → cond. présent","si+PQP → cond. passé","hypothèse implicite au présent","si+PQP → cond. passé"]},
+   {code:"G3",titre:"Connecteurs — reformulation",consigne:"Reformulez avec le connecteur indiqué.",items:["Les exportations chutent. Les prix alimentaires augmentent. (de sorte que)","Les aides existent. Elles restent insuffisantes. (certes... mais)","Les tensions se prolongent. L'inflation s'installe durablement. (à mesure que)","Les banques centrales relèvent leurs taux. Elles cherchent à freiner l'inflation. (tout en)"],corr:["Les exportations chutent, de sorte que les prix alimentaires augmentent.","Certes les aides existent, mais elles restent insuffisantes.","À mesure que les tensions se prolongent, l'inflation s'installe durablement.","Les banques centrales relèvent leurs taux, tout en cherchant à freiner l'inflation."],expl:["« de sorte que » introduit la conséquence.","structure concessive corrélative.","progression parallèle de deux faits.","« tout en » + gérondif : simultanéité (même sujet)."]},
+   {code:"G4",titre:"Discours indirect",consigne:"Transposez au discours indirect.",items:["Un économiste a déclaré : « Cette crise redessine les équilibres mondiaux. »","Une journaliste a demandé : « Combien de temps cette inflation va-t-elle durer ? »","Le ministre a affirmé : « Nous avons sous-estimé notre dépendance énergétique. »","L'experte a conseillé : « Diversifiez rapidement vos sources d'approvisionnement. »"],corr:["Un économiste a déclaré que cette crise redessinait les équilibres mondiaux.","Une journaliste a demandé combien de temps cette inflation allait durer.","Le ministre a affirmé qu'ils avaient sous-estimé leur dépendance énergétique.","L'experte a conseillé de diversifier rapidement leurs sources d'approvisionnement."],expl:["présent → imparfait","question indirecte : mot interrogatif conservé, futur proche → « allait »","PC → PQP","impératif → infinitif précédé de « de »"]},
+   {code:"G5",titre:"PC / Imparfait / PQP",consigne:"Conjuguez au temps du passé qui convient.",items:["Quand les prix de l'énergie (flamber – PC), de nombreux ménages ont dû revoir leur budget.","À l'époque, on (ne pas mesurer – imparfait) l'ampleur de cette dépendance énergétique.","Ce pays (ne jamais connaître – PQP) une telle inflation avant cette crise.","Les experts (publier – PC) une analyse qu'ils (préparer – imparfait) depuis plusieurs mois."],corr:["ont flambé","ne mesurait pas","n'avait jamais connu","ont publié / préparaient"],expl:["action ponctuelle achevée","description d'un état","antériorité par rapport à une autre action passée","PC (action) / imparfait (toile de fond)"]},
+   {code:"G6",titre:"Voix passive",consigne:"Transformez à la voix passive.",items:["Les sanctions économiques affectent plusieurs secteurs clés.","Les gouvernements ont mis en place des mesures de soutien.","On devra revoir ces politiques énergétiques."],corr:["Plusieurs secteurs clés sont affectés par les sanctions économiques.","Des mesures de soutien ont été mises en place par les gouvernements.","Ces politiques énergétiques devront être revues."],expl:["présent actif → présent passif","PC actif → PC passif","devoir + infinitif actif → devoir + infinitif passif"]},
+   {code:"G7",titre:"Nominalisation",consigne:"Remplacez le verbe par un nom.",items:["Les prix de l'énergie augmentent rapidement.","Les pays diversifient progressivement leurs approvisionnements.","Les gouvernements régulent peu ces marchés.","Les citoyens prennent conscience progressivement de cette dépendance."],corr:["L'augmentation rapide des prix de l'énergie.","La diversification progressive des approvisionnements par les pays.","La faible régulation de ces marchés par les gouvernements.","La prise de conscience progressive de cette dépendance par les citoyens."],expl:["« augmenter » → « l'augmentation »","« diversifier » → « la diversification »","« réguler » → « la régulation » ; « peu » devient « faible »","« prendre conscience » → « la prise de conscience »"]},
+   {code:"G8",titre:"Prépositions",consigne:"Complétez avec la préposition qui convient.",items:["Cette étude porte ___ les conséquences économiques de ces crises.","Les ménages modestes sont exposés ___ une hausse du coût de la vie.","Il est urgent d'investir ___ des solutions énergétiques durables.","Les gouvernements doivent rendre compte ___ leurs choix budgétaires.","Cette crise se manifeste ___ multiples façons."],corr:["sur","à","dans","de","de"],expl:["« porter sur » : fixe","« exposé à » : fixe","« investir dans » : fixe","« rendre compte de » : fixe","« se manifester de multiples façons » : locution figée"]}
+  ],
+  reformulation:[
+   ["Ces crises transforment les équilibres économiques mondiaux.","nominalisation","La transformation des équilibres économiques mondiaux par ces crises est manifeste."],
+   ["Les sanctions affectent plusieurs secteurs clés.","voix passive","Plusieurs secteurs clés sont affectés par les sanctions."],
+   ["Les aides existent ; les besoins augmentent.","connecteur d'opposition","Si les aides existent, les besoins, eux, ne cessent d'augmenter."],
+   ["On ne peut ignorer les conséquences économiques de ces crises.","forme impersonnelle","Il est impossible d'ignorer les conséquences économiques de ces crises."],
+   ["L'inflation progresse vite ; le pouvoir d'achat recule.","de sorte que","L'inflation progresse vite, de sorte que le pouvoir d'achat recule."]
+  ],
+  expression:{sujet:"Selon vous, les crises géopolitiques doivent-elles pousser les pays à renforcer leur souveraineté économique, quitte à réduire les échanges internationaux ? Répondez dans un texte argumenté d'environ 250 mots.",
+   consignes:["Thèse claire dès l'introduction","2 à 3 arguments illustrés d'exemples","Style soutenu, registre B2","Conclusion ouverte"],
+   grille:[["Cohérence et structure","5/5"],["Richesse lexicale","4/5"],["Maîtrise grammaticale","5/5"],["Orthographe","4/5"]],
+   modele:"Renforcer sa souveraineté économique en réponse aux crises géopolitiques est une tentation compréhensible, mais qui comporte ses propres risques si elle se traduit par un repli généralisé.\n\nIl est vrai que la dépendance excessive envers un nombre restreint de fournisseurs, qu'il s'agisse d'énergie ou de matières premières, expose les pays à des chocs difficilement maîtrisables. Diversifier ses approvisionnements, investir dans les énergies renouvelables et relocaliser certaines productions stratégiques constituent des réponses de bon sens face à cette vulnérabilité.\n\nPour autant, réduire drastiquement les échanges internationaux au nom de la souveraineté reviendrait à se priver des bénéfices de la spécialisation économique mondiale, qui a permis, historiquement, une baisse des coûts et un accès plus large à de nombreux biens. Un repli trop marqué risquerait également d'isoler les économies les plus fragiles, moins en mesure de produire seules l'ensemble de leurs besoins.\n\nLa voie la plus raisonnable semble résider dans un équilibre : maintenir une ouverture commerciale tout en sécurisant les secteurs jugés véritablement stratégiques, sans céder à la tentation d'un protectionnisme généralisé qui pénaliserait davantage qu'il ne protégerait.\n\nEn définitive, la souveraineté économique ne devrait pas signifier l'isolement, mais une interdépendance mieux maîtrisée et plus résiliente face aux chocs futurs."}
+}
+];
+
+// ---------------------------------------------------------------- MODULES GRAMMAIRE PURE (Articles, Prépositions, Connecteurs)
+const GRAMMAR_DATA = [
+{
+  slug:"artprep_b1_v4", titre:"Module 3", theme:"Articles, Prépositions & Connecteurs — Niveau B1 (les courses et la cuisine)",
+  grammarOnly:true,
+  parties:[
+    {titre:"Partie A — Articles et Prépositions", exercices:[
+      {titre:"Exercice 1 — Articles : le / la / l' / les / un / une / des / du / de la", consigne:"Complétez avec l'article qui convient.",
+       items:["Elle achète ___ légumes frais et ___ viande pour ce soir.",
+              "___ supermarché est fermé ___ dimanche après-midi.",
+              "Il a ___ excellente recette de gâteau au chocolat.",
+              "Il ne reste plus ___ œufs dans le frigo.",
+              "C'est ___ meilleur restaurant du quartier."],
+       corr:["des / de la","Le / le","une","d'","le"],
+       expl:["« des » : indéfini pluriel · « de la » : partitif féminin.",
+             "« le » : article défini singulier (lieu identifié), répété devant le jour de la semaine.",
+             "« une » : indéfini féminin singulier.",
+             "Après une négation totale (ne...plus), l'article indéfini pluriel « des » se réduit à « d' ».",
+             "« le » : article défini, superlatif (le meilleur)."]},
+      {titre:"Exercice 2 — Prépositions de lieu et de temps", consigne:"Complétez avec la préposition qui convient (à, au, dans, sur, chez, de…).",
+       items:["Nous allons ___ marché le samedi matin.",
+              "Elle fait ses courses ___ le supermarché ___ coin de la rue.",
+              "Le pain est ___ le sac, ___ la table de la cuisine.",
+              "Nous dînons ___ mes parents ce soir.",
+              "Le restaurant est ouvert ___ midi ___ minuit."],
+       corr:["au","dans / au","dans / sur","chez","de / à"],
+       expl:["« au » devant un nom masculin de lieu (le marché).",
+             "« dans » = à l'intérieur du magasin · « au coin de » : locution figée.",
+             "« dans » = à l'intérieur (le sac) · « sur » = surface (la table).",
+             "« chez » + personne.",
+             "« de... à... » exprime un intervalle horaire complet."]},
+      {titre:"Exercice 3 — Prépositions avec les verbes courants", consigne:"Complétez avec la préposition qui convient (à, de, en, pour, sur, avec…).",
+       items:["Elle a envie ___ essayer une nouvelle recette.",
+              "Ils ont décidé ___ cuisiner ensemble ce week-end.",
+              "Nous avons besoin ___ farine et ___ sucre.",
+              "Il compte ___ toi pour préparer le dessert.",
+              "Nous discutons du menu ___ nos invités."],
+       corr:["de","de","de / de","sur","avec"],
+       expl:["« avoir envie de » + infinitif : construction fixe.",
+             "« décider de » + infinitif : construction fixe.",
+             "« avoir besoin de » : construction fixe, répétée devant chaque nom.",
+             "« compter sur » = se fier à : construction fixe.",
+             "« discuter avec quelqu'un » : construction fixe."]},
+      {titre:"Exercice 4 — Locutions prépositionnelles simples", consigne:"Complétez avec la locution : près de, loin de, grâce à, à cause de, avant de.",
+       items:["___ goûter le plat, ajoute un peu de sel.",
+              "Cette épicerie est ___ chez moi, j'y vais à pied.",
+              "Nous avons annulé le pique-nique ___ la pluie.",
+              "___ cette recette, le repas a été un succès.",
+              "Ce restaurant est ___ tout, il faut prendre la voiture."],
+       corr:["Avant de","près de","à cause de","Grâce à","loin de"],
+       expl:["« avant de » + infinitif : antériorité.",
+             "« près de » exprime la proximité.",
+             "« à cause de » introduit une cause négative ou neutre.",
+             "« grâce à » introduit une cause positive.",
+             "« loin de » exprime l'éloignement."]},
+    ]},
+    {titre:"Partie B — Connecteurs logiques", exercices:[
+      {titre:"Exercice 5 — Connecteurs simples", consigne:"Complétez avec le connecteur : mais, parce que, car, donc, si, pourtant.",
+       items:["Le gâteau est raté, ___ nous allons en refaire un.",
+              "Elle voulait cuisiner, ___ elle n'avait plus le temps.",
+              "___ tu ajoutes trop de sel, le plat sera immangeable.",
+              "Il est content ___ son plat a plu à tout le monde.",
+              "La recette semblait simple ; ___ elle a pris deux heures."],
+       corr:["donc","mais","Si","parce que / car","pourtant"],
+       expl:["« donc » exprime la conséquence logique.",
+             "« mais » introduit une opposition.",
+             "« si » introduit une condition simple.",
+             "« parce que / car » expriment la cause.",
+             "« pourtant » marque une opposition malgré ce qui précède."]},
+      {titre:"Exercice 6 — Connecteurs de temps et d'énumération", consigne:"Complétez avec le connecteur : d'abord, ensuite, enfin, par exemple, de plus.",
+       items:["___, coupez les légumes. ___, faites-les cuire à la vapeur.",
+              "Elle aime cuisiner plusieurs plats : ___, les pâtes et le risotto.",
+              "Ce restaurant est bon marché. ___, la carte est variée.",
+              "Nous avons préparé l'entrée, ___ le plat principal, et ___ le dessert.",
+              "Lave les légumes. ___, épluche les carottes."],
+       corr:["D'abord / Ensuite","par exemple","De plus","ensuite / enfin","Ensuite"],
+       expl:["« d'abord » = première étape, « ensuite » = étape suivante.",
+             "« par exemple » introduit une illustration concrète.",
+             "« de plus » ajoute un argument qui renforce ce qui précède.",
+             "« ensuite » = étape intermédiaire, « enfin » = dernière étape.",
+             "« ensuite » enchaîne une deuxième consigne après la première."]},
+    ]},
+  ]
+},
+{
+  slug:"artprep_b2_v4", titre:"Module 4", theme:"Articles, Prépositions & Connecteurs — Niveau B2 (santé publique et médecine)",
+  grammarOnly:true,
+  parties:[
+    {titre:"Partie A — Articles, Prépositions & Locutions avancées", exercices:[
+      {titre:"Exercice 1 — Articles en contexte médical", consigne:"Complétez avec l'article qui convient.",
+       items:["Les autorités ont fait preuve ___ grande réactivité et ___ solidarité exemplaire.",
+              "___ médecine préventive gagne ___ importance croissante.",
+              "Il a ___ expertise reconnue et ___ sens aigu ___ responsabilités.",
+              "Les hôpitaux manquent ___ personnel mais ne manquent pas ___ motivation.",
+              "Nous avons besoin ___ étude rigoureuse et ___ campagne de sensibilisation."],
+       corr:["d'une / d'une","La / une","une / un / des","de / de","d'une / d'une"],
+       expl:["« faire preuve de » + adjectif + nom garde l'article (d'une), répété devant chaque nom.",
+             "Article défini devant un concept général (la médecine) · indéfini devant « importance ».",
+             "Indéfinis simples (une/un) · « des » = contraction de + les dans l'expression figée « le sens des responsabilités ».",
+             "« manquer de » : construction fixe sans article, y compris à la forme négative.",
+             "« avoir besoin de » + indéfini féminin élidé devant voyelle."]},
+      {titre:"Exercice 2 — Prépositions et locutions de temps/lieu avancées", consigne:"Complétez avec la locution : à l'aube de, au cours de, au sein de, au fil de.",
+       items:["___ cet hôpital, la coordination entre services est exemplaire.",
+              "Les protocoles se sont affinés ___ plusieurs décennies de recherche.",
+              "___ cette pandémie, plusieurs avancées scientifiques majeures ont émergé.",
+              "___ cette nouvelle ère médicale, la médecine personnalisée progresse rapidement.",
+              "___ ce service, chaque patient bénéficie d'un suivi individualisé."],
+       corr:["Au sein de","au fil de","Au cours de","À l'aube de","Au sein de"],
+       expl:["« au sein de » = à l'intérieur d'un groupe, d'une organisation.",
+             "« au fil de » = progressivement, au cours du temps qui passe.",
+             "« au cours de » = pendant la durée de.",
+             "« à l'aube de » = au tout début de, métaphoriquement.",
+             "« au sein de » réemployé ici avec le même sens qu'en 1."]},
+      {titre:"Exercice 3 — Prépositions avec verbes et adjectifs", consigne:"Complétez avec la préposition qui convient.",
+       items:["Les autorités sanitaires doivent veiller ___ la sécurité des patients.",
+              "Il s'agit ___ repenser l'organisation des soins de proximité.",
+              "Certains patients sont enclins ___ négliger les visites de contrôle.",
+              "Il faut remédier rapidement ___ la pénurie de personnel soignant.",
+              "Ce traitement consiste ___ renforcer le système immunitaire."],
+       corr:["à","de","à","à","à"],
+       expl:["« veiller à » : construction fixe.",
+             "« il s'agit de » + infinitif : tournure impersonnelle fixe.",
+             "« être enclin à » + infinitif : construction adjectivale fixe.",
+             "« remédier à » : construction verbale fixe.",
+             "« consister à » + infinitif : construction verbale fixe."]},
+      {titre:"Exercice 4 — Locutions prépositionnelles avancées", consigne:"Complétez avec la locution : en dépit de, sous couvert de, à l'instar de, au détriment de, en vertu de.",
+       items:["L'hôpital a privilégié la rentabilité ___ la qualité de l'accueil des patients.",
+              "___ du nouveau protocole sanitaire, les visites sont désormais limitées.",
+              "___ les moyens limités, le service a maintenu un accueil de qualité.",
+              "___ plusieurs pays scandinaves, ce pays a investi massivement dans la prévention.",
+              "___ une réforme nécessaire, ce projet réduit en réalité l'accès aux soins."],
+       corr:["au détriment de","En vertu","En dépit de","À l'instar de","Sous couvert de"],
+       expl:["« au détriment de » = au prix de, en sacrifiant autre chose.",
+             "« en vertu de » = en conformité avec, selon une règle.",
+             "« en dépit de » = malgré (concession).",
+             "« à l'instar de » = à l'exemple de, comme.",
+             "« sous couvert de » = en prétextant, en se cachant derrière une justification apparente."]},
+    ]},
+    {titre:"Partie B — Connecteurs logiques avancés", exercices:[
+      {titre:"Exercice 5 — Connecteurs d'opposition, de concession et de cause", consigne:"Complétez avec le connecteur : or, dans la mesure où, étant donné que, quoique, alors même que.",
+       items:["___ les résultats soient encourageants, la vigilance reste de mise.",
+              "L'hôpital continue d'accueillir des urgences ___ ses ressources s'amenuisent.",
+              "Ce programme est prioritaire ___ il concerne la santé de tous.",
+              "Le plan semblait suffisant ; ___, une nouvelle vague a tout bouleversé.",
+              "___ la population vieillit, les besoins en soins augmentent."],
+       corr:["Quoique","alors même que","dans la mesure où","or","Étant donné que"],
+       expl:["« quoique » = concession, suivie obligatoirement du subjonctif (soient).",
+             "« alors même que » = concession renforcée, suivie de l'indicatif.",
+             "« dans la mesure où » = cause/justification, suivie de l'indicatif.",
+             "« or » introduit un fait inattendu qui contredit ce qui précède.",
+             "« étant donné que » = cause factuelle, suivie de l'indicatif."]},
+      {titre:"Exercice 6 — Connecteurs de conséquence, de but et d'addition", consigne:"Complétez avec le connecteur : qui plus est, dans l'optique de, non seulement... mais aussi, de manière à ce que, si bien que.",
+       items:["L'hôpital a réorganisé ses services ___ chacun puisse être pris en charge rapidement.",
+              "La demande de soins a explosé, ___ les délais d'attente se sont allongés.",
+              "Ce traitement est efficace ; ___, il est bien toléré.",
+              "Les autorités ont lancé une campagne ___ mieux informer la population.",
+              "Ce dispositif est ___ innovant ___ accessible."],
+       corr:["de manière à ce que (ou de sorte que)","si bien que","qui plus est","dans l'optique de","non seulement / mais aussi"],
+       expl:["« de manière à ce que » exprime le but, suivi du subjonctif (puisse).",
+             "« si bien que » exprime la conséquence, suivi de l'indicatif.",
+             "« qui plus est » ajoute un argument qui renforce ce qui précède.",
+             "« dans l'optique de » + infinitif exprime le but/l'intention.",
+             "« non seulement... mais aussi » est une structure corrélative d'addition renforcée."]},
+    ]},
+  ]
+},
+];
+
+const SECTION_TITLES = ["Texte de départ","Compréhension","Vocabulaire","Grammaire","Reformulation","Expression écrite"];
+
+function el(tag, cls, html){const e=document.createElement(tag); if(cls)e.className=cls; if(html!==undefined)e.innerHTML=html; return e;}
+
+// ---------------------------------------------------------------- LECTURE AUDIO (synthèse vocale du navigateur)
+let _speakBtnEls = [];
+function speakFR(text, btnEl){
+  try{
+    window.speechSynthesis.cancel();
+    _speakBtnEls.forEach(b=>b.classList.remove('playing'));
+    const clean = String(text).replace(/^[✔✘]\s*/,'').replace(/\n+/g,' ').trim();
+    if(!clean) return;
+    const u = new SpeechSynthesisUtterance(clean);
+    u.lang = 'fr-FR';
+    u.rate = 0.95;
+    if(btnEl){ btnEl.classList.add('playing'); u.onend = ()=>btnEl.classList.remove('playing'); u.onerror = ()=>btnEl.classList.remove('playing'); }
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function makeSpeakBtn(text){
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'speak-btn'; b.innerHTML = '🔊'; b.title = 'Écouter';
+  b.onclick = (e)=>{ e.stopPropagation(); e.preventDefault(); speakFR(text, b); };
+  _speakBtnEls.push(b);
+  return b;
+}
+function addSpeakButtons(root){
+  if(!('speechSynthesis' in window)) return;
+  (root||document).querySelectorAll('.answer-box, .corr-table td, .pop').forEach(node=>{
+    if(node.querySelector('.speak-btn')) return;
+    const txt = node.textContent.trim();
+    if(!txt) return;
+    node.appendChild(makeSpeakBtn(txt));
+  });
+}
+
+function buildModule(mod, idx){
+  const wrap = el('div','module'+(idx===0?' active':''));
+  wrap.id = 'mod-'+mod.slug;
+
+  const banner = el('div','theme-banner');
+  banner.innerHTML = `<span class="badge">${mod.titre} · Niveau B2</span><h2>${mod.theme}</h2>`;
+  wrap.appendChild(banner);
+
+  const progress = el('div','progress');
+  for(let i=0;i<6;i++){const seg=el('div','seg'); seg.innerHTML='<i></i>'; progress.appendChild(seg);}
+  wrap.appendChild(progress);
+
+  // Section 1 - texte
+  wrap.appendChild(buildBlock(0,"Texte de départ", body=>{
+    mod.texte.forEach(p=>body.appendChild(el('p',null,p)));
+  }, mod));
+
+  // Section 2 - compréhension
+  wrap.appendChild(buildBlock(1,"Compréhension", body=>{
+    body.appendChild(el('p','consigne','Répondez mentalement, puis vérifiez votre compréhension.'));
+    mod.comprehension.forEach((qa,i)=>{
+      const q = el('div','q');
+      q.appendChild(el('div','qtext', (i+1)+'. '+qa[0]));
+      const btn = el('button','reveal-btn','Voir la réponse');
+      const ans = el('div','answer-box','✔ '+qa[1]);
+      const pkey = mod.slug+'.comp.'+i;
+      if(loadField(pkey)==='1') ans.classList.add('show');
+      btn.onclick = ()=>{ans.classList.toggle('show'); saveField(pkey, ans.classList.contains('show')?'1':'0'); markProgress(mod,1);};
+      q.appendChild(btn); q.appendChild(ans);
+      body.appendChild(q);
+    });
+  }, mod));
+
+  // Section 3 - vocabulaire
+  wrap.appendChild(buildBlock(2,"Vocabulaire", body=>{
+    mod.vocab.forEach(ex=>{
+      const box = el('div','vocab-ex'+(ex.green?' green':''));
+      box.appendChild(el('h4',null,ex.titre));
+      box.appendChild(el('p','consigne',ex.consigne));
+      if(ex.input){
+        ex.items.forEach((it,i)=>{
+          const row = el('div', it.includes('___') ? 'vocab-input-row sentence' : 'vocab-input-row');
+          const fid = mod.slug+'-'+ex.titre.replace(/\s+/g,'')+'-'+i;
+          row.innerHTML = `<span class="vi-word">${it}</span>
+            <input type="text" class="vi-field" id="${fid}" placeholder="votre réponse…" />`;
+          const inp = row.querySelector('input');
+          const saved = loadField(fid);
+          if(saved) inp.value = saved;
+          inp.addEventListener('input', ()=>saveField(fid, inp.value));
+          box.appendChild(row);
+        });
+        const revealBtn = el('button','reveal-btn','Voir la correction');
+        revealBtn.style.marginTop = '8px';
+        const corrBox = el('div','vocab-corr-box');
+        corrBox.innerHTML = ex.items.map((it,i)=>`<div class="answer-box show" style="margin-bottom:5px;">
+            <div>✔ ${it} → ${ex.corr[i]}</div>
+            ${ex.expl && ex.expl[i] ? '<div class="expl-inline">ℹ '+ex.expl[i]+'</div>' : ''}
+          </div>`).join('');
+        corrBox.style.display = 'none';
+        revealBtn.onclick = ()=>{ corrBox.style.display = corrBox.style.display==='none' ? 'block' : 'none'; markProgress(mod,2); };
+        box.appendChild(revealBtn);
+        box.appendChild(corrBox);
+      } else if(ex.match){
+        const cols = el('div','match-cols');
+        const colV = el('div','match-col');
+        colV.innerHTML = '<h5>Verbes</h5>' + ex.verbes.map(v=>`<div class="match-line">${v}</div>`).join('');
+        const colC = el('div','match-col');
+        colC.innerHTML = '<h5>Compléments</h5>' + ex.complements.map(c=>`<div class="match-line">${c}</div>`).join('');
+        cols.appendChild(colV); cols.appendChild(colC);
+        box.appendChild(cols);
+        const revealBtn = el('button','reveal-btn','Voir les réponses');
+        revealBtn.style.marginTop = '10px';
+        const ansBox = el('div','match-answers');
+        ansBox.innerHTML = ex.reponses.map(r=>`<div class="answer-box show" style="margin-bottom:6px;">✔ ${r}</div>`).join('');
+        ansBox.style.display = 'none';
+        revealBtn.onclick = ()=>{ ansBox.style.display = ansBox.style.display==='none' ? 'block' : 'none'; markProgress(mod,2); };
+        box.appendChild(revealBtn);
+        box.appendChild(ansBox);
+      } else if(ex.table){
+        const t = el('table','fam');
+        t.innerHTML = '<tr><th>Verbe</th><th>Nom</th><th>Adjectif</th></tr>' +
+          ex.table.map((r,ri)=>`<tr><td>${r[0]}</td>
+            <td><input type="text" class="fam-input" placeholder="trouvez le nom…" /></td>
+            <td><input type="text" class="fam-input" placeholder="trouvez l'adjectif…" /></td></tr>`).join('');
+        box.appendChild(t);
+        const revealBtn = el('button','reveal-btn','Voir la correction');
+        revealBtn.style.marginTop = '10px';
+        const corrTable = el('table','fam corr-table');
+        corrTable.innerHTML = '<tr><th>Verbe</th><th>Nom</th><th>Adjectif</th></tr>' +
+          ex.table.map(r=>`<tr><td>${r[0]}</td><td>✔ ${r[1]}</td><td>✔ ${r[2]}</td></tr>`).join('');
+        revealBtn.onclick = ()=>{ corrTable.classList.toggle('show'); markProgress(mod,2); };
+        box.appendChild(revealBtn);
+        box.appendChild(corrTable);
+      } else {
+        const row = el('div','chip-row');
+        ex.items.forEach((it,i)=>{
+          const chip = el('div','chip', it+'<div class="pop">'+ex.corr[i]+'</div>');
+          chip.onclick = ()=>{chip.classList.toggle('open'); markProgress(mod,2);};
+          row.appendChild(chip);
+        });
+        box.appendChild(row);
+      }
+      body.appendChild(box);
+    });
+  }, mod));
+
+  // Section 4 - grammaire
+  wrap.appendChild(buildBlock(3,"Grammaire", body=>{
+    mod.grammar.forEach(g=>{
+      body.appendChild(el('h4',null,g.code+' — '+g.titre));
+      body.appendChild(el('p','consigne',g.consigne));
+      g.items.forEach((it,i)=>{
+        const gi = el('div','gram-item');
+        const inputId = mod.slug+'-'+g.code+'-'+i;
+        gi.innerHTML = `<span class="phrase">${it}</span> <input id="${inputId}" placeholder="réponse" />
+          <button class="check-btn">Vérifier</button>
+          <div class="gram-feedback"></div>
+          ${g.expl[i] ? '<div class="expl">💡 '+g.expl[i]+'</div>' : ''}`;
+        const btn = gi.querySelector('.check-btn');
+        const input = gi.querySelector('input');
+        const fb = gi.querySelector('.gram-feedback');
+        const exp = gi.querySelector('.expl');
+        const saved = loadField(inputId);
+        if(saved) input.value = saved;
+        input.addEventListener('input', ()=>saveField(inputId, input.value));
+        btn.onclick = ()=>{
+          const val = input.value.trim().toLowerCase();
+          const correct = g.corr[i].toLowerCase();
+          if(val.length===0){ fb.textContent='Entrez une réponse, puis cliquez à nouveau.'; fb.className='gram-feedback no'; return; }
+          if(correct.includes(val) || val.includes(correct.split(' ')[0])){
+            fb.textContent = '✔ Correct : '+g.corr[i]; fb.className='gram-feedback ok';
+          } else {
+            fb.textContent = '✘ Réponse attendue : '+g.corr[i]; fb.className='gram-feedback no';
+          }
+          fb.appendChild(makeSpeakBtn(g.corr[i]));
+          if(exp) exp.classList.add('show');
+          markProgress(mod,3);
+        };
+        body.appendChild(gi);
+      });
+    });
+  }, mod));
+
+  // Section 5 - reformulation
+  wrap.appendChild(buildBlock(4,"Reformulation", body=>{
+    body.appendChild(el('p','consigne',"Reformulez chaque phrase à l'aide de la technique indiquée, puis vérifiez."));
+    mod.reformulation.forEach((r,i)=>{
+      const item = el('div','reform-item');
+      item.innerHTML = `<div class="technique">${r[1]}</div><div class="qtext">${i+1}. ${r[0]}</div>`;
+      const btn = el('button','reveal-btn','Voir la reformulation');
+      const ans = el('div','answer-box','✔ '+r[2]);
+      btn.onclick = ()=>{ans.classList.toggle('show'); markProgress(mod,4);};
+      item.appendChild(btn); item.appendChild(ans);
+      body.appendChild(item);
+    });
+  }, mod));
+
+  // Section 6 - expression écrite
+  wrap.appendChild(buildBlock(5,"Expression écrite", body=>{
+    const box = el('div','expr-box');
+    box.appendChild(el('p',null,'<strong>Sujet :</strong> '+mod.expression.sujet));
+    const ul = el('ul',null, mod.expression.consignes.map(c=>'<li>'+c+'</li>').join(''));
+    box.appendChild(ul);
+    const ta = el('textarea',null); ta.placeholder = 'Rédigez votre texte ici (~250 mots)…';
+    const taId = mod.slug+'-expr';
+    const savedTa = loadField(taId);
+    if(savedTa) ta.value = savedTa;
+    box.appendChild(ta);
+    const wc = el('div','wordcount', savedTa ? (savedTa.trim().split(/\s+/).filter(Boolean).length)+' mots' : '0 mot');
+    ta.addEventListener('input', ()=>{
+      const n = ta.value.trim().split(/\s+/).filter(Boolean).length;
+      wc.textContent = n+' mot'+(n>1?'s':'');
+      saveField(taId, ta.value);
+      markProgress(mod,5);
+    });
+    box.appendChild(wc);
+
+    const mtoggle = el('button','reveal-btn model-toggle','Voir la production modèle et la grille');
+    const mbox = el('div','model-box');
+    mbox.innerHTML = mod.expression.modele.split('\n\n').map(p=>'<p>'+p+'</p>').join('') +
+      '<table class="grille"><tr><th>Critère</th><th>Note</th></tr>' +
+      mod.expression.grille.map(g=>`<tr><td>${g[0]}</td><td>${g[1]}</td></tr>`).join('') + '</table>';
+    mtoggle.onclick = ()=>mbox.classList.toggle('show');
+    const modelSpeak = el('button','reveal-btn','🔊 Écouter le modèle');
+    modelSpeak.style.marginLeft = '8px';
+    modelSpeak.onclick = ()=>speakFR(mod.expression.modele, modelSpeak);
+    box.appendChild(mtoggle); box.appendChild(modelSpeak); box.appendChild(mbox);
+    body.appendChild(box);
+  }, mod));
+
+  return wrap;
+}
+
+function buildBlock(index, title, fillFn, mod){
+  const block = el('section','block');
+  block.dataset.section = index;
+  const head = el('div','block-head');
+  head.innerHTML = `<div class="title"><span class="num">${index+1}</span>${title}</div><span class="chev">▾</span>`;
+  const body = el('div','block-body');
+  const inner = el('div','block-inner');
+  fillFn(inner);
+  body.appendChild(inner);
+  head.onclick = ()=>block.classList.toggle('open');
+  block.appendChild(head); block.appendChild(body);
+  if(index===0) block.classList.add('open');
+  return block;
+}
+
+function buildGrammarModule(mod, idx){
+  const wrap = el('div','module'+(idx===0?' active':''));
+  wrap.id = 'mod-'+mod.slug;
+
+  const banner = el('div','theme-banner');
+  banner.innerHTML = `<span class="badge">${mod.titre} · Grammaire</span><h2>${mod.theme}</h2>`;
+  wrap.appendChild(banner);
+
+  const progress = el('div','progress');
+  mod.parties.forEach(()=>{ const seg=el('div','seg'); seg.innerHTML='<i></i>'; progress.appendChild(seg); });
+  wrap.appendChild(progress);
+
+  mod.parties.forEach((partie, pi)=>{
+    wrap.appendChild(buildBlock(pi, partie.titre, body=>{
+      partie.exercices.forEach(ex=>{
+        body.appendChild(el('h4',null,ex.titre));
+        body.appendChild(el('p','consigne',ex.consigne));
+        ex.items.forEach((it,i)=>{
+          const row = el('div','vocab-input-row sentence');
+          const fid = mod.slug+'-p'+pi+'-'+ex.titre.slice(0,12).replace(/\s+/g,'')+'-'+i;
+          row.innerHTML = `<span class="vi-word">${i+1}. ${it}</span>
+            <input type="text" class="vi-field" id="${fid}" placeholder="votre réponse…" />`;
+          const inp = row.querySelector('input');
+          const saved = loadField(fid);
+          if(saved) inp.value = saved;
+          inp.addEventListener('input', ()=>{ saveField(fid, inp.value); markProgress(mod, pi); });
+          body.appendChild(row);
+        });
+        const revealBtn = el('button','reveal-btn','Voir la correction');
+        revealBtn.style.margin = '4px 0 18px';
+        const corrBox = el('div','vocab-corr-box');
+        corrBox.innerHTML = ex.items.map((it,i)=>`<div class="answer-box show" style="margin-bottom:5px;">
+            <div>✔ ${i+1}. ${ex.corr[i]}</div>
+            ${ex.expl && ex.expl[i] ? '<div class="expl-inline">ℹ '+ex.expl[i]+'</div>' : ''}
+          </div>`).join('');
+        corrBox.style.display = 'none';
+        revealBtn.onclick = ()=>{ corrBox.style.display = corrBox.style.display==='none' ? 'block' : 'none'; markProgress(mod, pi); };
+        body.appendChild(revealBtn);
+        body.appendChild(corrBox);
+      });
+    }, mod));
+  });
+
+  return wrap;
+}
+
+// ---------------------------------------------------------------- MODULE 5 : QCM / VRAI-FAUX
+const QCM_DATA = [
+ {
+  "slug": "qcm_m1",
+  "titre": "Module 5",
+  "theme": "QCM & Vrai/Faux — Texte 1 — Le dérèglement climatique et ses conséquences sur la faune sauvage",
+  "qcmOnly": true,
+  "sections": [
+   {
+    "titre": "Compréhension du texte 1",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Selon le texte, qu'est-ce qui menace directement la survie des ours polaires ?",
+      "o": [
+       "La pollution des rivières arctiques",
+       "La chasse intensive",
+       "La fonte accélérée de la banquise",
+       "La disparition des forêts boréales"
+      ],
+      "a": 2,
+      "w": "Le texte précise que la fonte accélérée de la banquise réduit leur territoire de chasse."
+     },
+     {
+      "t": "qcm",
+      "q": "Que provoque l'élévation de la température des océans chez les coraux ?",
+      "o": [
+       "Une migration vers les pôles",
+       "Un blanchissement massif",
+       "Une croissance plus rapide",
+       "Une reproduction accrue"
+      ],
+      "a": 1,
+      "w": "Le blanchissement massif prive des milliers d'espèces marines de leur habitat naturel."
+     },
+     {
+      "t": "qcm",
+      "q": "Pourquoi les cycles des espèces migratoires sont-ils perturbés ?",
+      "o": [
+       "Parce que leurs routes de migration sont interdites",
+       "Parce qu'elles arrivent trop tôt ou trop tard, quand les ressources ne sont plus synchronisées avec leurs besoins",
+       "Parce que ces espèces refusent de migrer",
+       "Parce que les prédateurs sont devenus plus nombreux"
+      ],
+      "a": 1,
+      "w": "Le décalage entre leur arrivée et la disponibilité des ressources désorganise leurs cycles."
+     },
+     {
+      "t": "qcm",
+      "q": "Quelle solution n'est PAS mentionnée dans le texte ?",
+      "o": [
+       "Les corridors écologiques",
+       "La restauration des habitats",
+       "La réduction drastique des émissions",
+       "L'interdiction totale de la pêche"
+      ],
+      "a": 3,
+      "w": "Le texte cite les corridors écologiques, la restauration des habitats et la réduction des émissions, mais pas l'interdiction de la pêche."
+     },
+     {
+      "t": "qcm",
+      "q": "Selon l'auteur, que doivent faire les politiques de conservation ?",
+      "o": [
+       "Se concentrer uniquement sur les espèces menacées",
+       "Prendre en compte la dimension climatique",
+       "Attendre les résultats des recherches scientifiques",
+       "Laisser la nature s'adapter seule"
+      ],
+      "a": 1,
+      "w": "L'auteur affirme qu'elles doivent intégrer la dimension climatique, sans quoi les efforts de préservation resteront vains."
+     },
+     {
+      "t": "qcm",
+      "q": "Que signifie l'expression « une hémorragie silencieuse de la biodiversité » ?",
+      "o": [
+       "Une perte importante d'espèces qui passe largement inaperçue",
+       "Une maladie qui touche les animaux sauvages",
+       "Un conflit entre plusieurs espèces",
+       "Un phénomène bruyant mais temporaire"
+      ],
+      "a": 0,
+      "w": "L'image de l'hémorragie évoque une perte continue et grave ; « silencieuse » souligne qu'elle reste peu visible du grand public."
+     },
+     {
+      "t": "vf",
+      "q": "Toutes les espèces parviennent à s'adapter en migrant vers des zones plus fraîches.",
+      "a": 1,
+      "w": "Faux : certaines y parviennent, mais la majorité n'a ni le temps ni l'espace nécessaires."
+     },
+     {
+      "t": "vf",
+      "q": "Le blanchissement des coraux prive de nombreuses espèces marines de leur habitat.",
+      "a": 0,
+      "w": "Vrai : le texte parle de « milliers d'espèces marines » privées de leur habitat naturel."
+     },
+     {
+      "t": "vf",
+      "q": "L'auteur considère qu'il n'existe aucune solution face à ce déclin.",
+      "a": 1,
+      "w": "Faux : il cite plusieurs solutions (corridors écologiques, restauration des habitats, réduction des émissions)."
+     },
+     {
+      "t": "vf",
+      "q": "L'auteur estime qu'un accord de la communauté internationale est nécessaire.",
+      "a": 0,
+      "w": "Vrai : il souligne qu'il faut que la communauté internationale s'accorde sur l'urgence d'agir."
+     }
+    ]
+   },
+   {
+    "titre": "Vocabulaire",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Quel est le sens de « effréné » dans « un rythme effréné » ?",
+      "o": [
+       "Lent et prudent",
+       "Très rapide et sans frein",
+       "Régulier et prévisible",
+       "Faible et discret"
+      ],
+      "a": 1,
+      "w": "Effréné = sans frein, très rapide, incontrôlé."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est l'antonyme de « drastique » ?",
+      "o": [
+       "Sévère",
+       "Radical",
+       "Modéré",
+       "Brutal"
+      ],
+      "a": 2,
+      "w": "Drastique = très sévère, radical. Son contraire est « modéré »."
+     },
+     {
+      "t": "vf",
+      "q": "La « raréfaction » des ressources désigne le fait qu'elles deviennent de plus en plus rares.",
+      "a": 0,
+      "w": "Vrai : raréfaction vient de « rare » ; c'est le processus par lequel quelque chose devient rare."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est le contraire d'« irréversible » ?",
+      "o": [
+       "Réversible",
+       "Définitif",
+       "Inéluctable",
+       "Permanent"
+      ],
+      "a": 0,
+      "w": "Le préfixe ir- marque la négation : irréversible = qui ne peut pas revenir en arrière. Son contraire est « réversible »."
+     },
+     {
+      "t": "qcm",
+      "q": "Que signifie « synchronisées » dans « des ressources qui ne sont plus synchronisées avec leurs besoins » ?",
+      "o": [
+       "Qui coïncident dans le temps",
+       "Qui sont détruites",
+       "Qui sont trop abondantes",
+       "Qui sont partagées entre pays"
+      ],
+      "a": 0,
+      "w": "Synchroniser, c'est faire coïncider dans le temps ; ici, la disponibilité des ressources ne coïncide plus avec les besoins des espèces."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est le nom correspondant au verbe « restaurer » ?",
+      "o": [
+       "La restauration",
+       "Le restaurant",
+       "La restaure",
+       "Le restaurage"
+      ],
+      "a": 0,
+      "w": "Restaurer → la restauration (nom d'action en -ation). « Le restaurant » désigne un lieu où l'on mange."
+     },
+     {
+      "t": "vf",
+      "q": "Une « espèce migratoire » est une espèce qui se déplace régulièrement d'une région à une autre.",
+      "a": 0,
+      "w": "Vrai : migrer, c'est se déplacer d'un territoire à un autre, en général selon les saisons."
+     }
+    ]
+   },
+   {
+    "titre": "Grammaire",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Complétez : « Il faut que les gouvernements ___ rapidement. »",
+      "o": [
+       "agiraient",
+       "agiront",
+       "agissent",
+       "agissaient"
+      ],
+      "a": 2,
+      "w": "« Il faut que » est suivi du subjonctif présent : que + ils agissent."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « ___ les résultats soient encourageants, la vigilance reste de mise. »",
+      "o": [
+       "Parce que",
+       "Quoique",
+       "Puisque",
+       "Donc"
+      ],
+      "a": 1,
+      "w": "« Quoique » exprime la concession et exige le subjonctif (soient). « Parce que » et « puisque » expriment la cause."
+     },
+     {
+      "t": "qcm",
+      "q": "Quelle phrase est la transformation correcte à la voix passive de « Les scientifiques ont observé un déclin » ?",
+      "o": [
+       "Un déclin a observé les scientifiques.",
+       "Un déclin a été observé par les scientifiques.",
+       "Un déclin est observé par les scientifiques.",
+       "Un déclin avait été observé par les scientifiques."
+      ],
+      "a": 1,
+      "w": "Passé composé actif (ont observé) → passé composé passif (a été observé) ; le COD devient le sujet."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Cette étude porte ___ les effets du climat. »",
+      "o": [
+       "à",
+       "de",
+       "sur",
+       "en"
+      ],
+      "a": 2,
+      "w": "« Porter sur » : construction verbale fixe (avoir pour sujet)."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Si les émissions diminuaient rapidement, les écosystèmes ___ plus de temps pour s'adapter. »",
+      "o": [
+       "auront",
+       "auraient",
+       "auraient eu",
+       "avaient"
+      ],
+      "a": 1,
+      "w": "Système hypothétique : si + imparfait → conditionnel présent."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Encore faut-il que la communauté internationale s'___ sur l'urgence d'agir. »",
+      "o": [
+       "accorde",
+       "accordait",
+       "accordera",
+       "accorderait"
+      ],
+      "a": 0,
+      "w": "« Encore faut-il que » est suivi du subjonctif présent. Pour les verbes en -er, il a la même forme que l'indicatif présent : qu'elle s'accorde."
+     }
+    ]
+   },
+   {
+    "titre": "Conjugaison",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Subjonctif présent de « prendre » : « Il faut que nous ___ en compte ce risque. »",
+      "o": [
+       "prenons",
+       "prendrions",
+       "prenions",
+       "prendions"
+      ],
+      "a": 2,
+      "w": "Au subjonctif présent, « nous » se conjugue comme à l'imparfait : que nous prenions."
+     },
+     {
+      "t": "qcm",
+      "q": "Subjonctif présent de « être » : « Bien qu'ils ___ conscients du problème, ils tardent à agir. »",
+      "o": [
+       "sont",
+       "seront",
+       "étaient",
+       "soient"
+      ],
+      "a": 3,
+      "w": "« Bien que » + subjonctif ; être → qu'ils soient."
+     },
+     {
+      "t": "qcm",
+      "q": "Conditionnel présent de « pouvoir » à la 1re personne du singulier :",
+      "o": [
+       "je pourrai",
+       "je pourrais",
+       "je puisse",
+       "je pouvrais"
+      ],
+      "a": 1,
+      "w": "Radical du futur (pourr-) + terminaison de l'imparfait (-ais) : je pourrais. « Je pourrai » est au futur."
+     },
+     {
+      "t": "vf",
+      "q": "Dans « Les mesures qu'ils ont prises », le participe passé s'accorde avec le COD placé avant le verbe.",
+      "a": 0,
+      "w": "Vrai : le COD « que » (= les mesures) est placé avant « ont prises », d'où l'accord au féminin pluriel."
+     },
+     {
+      "t": "vf",
+      "q": "Après « bien que », on emploie l'indicatif.",
+      "a": 1,
+      "w": "Faux : « bien que » est toujours suivi du subjonctif."
+     },
+     {
+      "t": "qcm",
+      "q": "Passé composé de « disparaître » : « Plusieurs espèces ___ de cette région. »",
+      "o": [
+       "ont disparu",
+       "sont disparues",
+       "ont disparues",
+       "ont disparaît"
+      ],
+      "a": 0,
+      "w": "Disparaître se conjugue avec l'auxiliaire avoir au passé composé ; le participe passé « disparu » reste invariable car il n'y a pas de COD placé avant."
+     },
+     {
+      "t": "qcm",
+      "q": "Futur simple de « voir » : « Dans dix ans, nous ___ les effets de ce changement. »",
+      "o": [
+       "verrons",
+       "voyerons",
+       "verrions",
+       "voirons"
+      ],
+      "a": 0,
+      "w": "Voir est irrégulier au futur (radical verr-) : nous verrons. « Verrions » est un conditionnel."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "slug": "qcm_m2",
+  "titre": "Module 6",
+  "theme": "QCM & Vrai/Faux — Texte 2 — Les conséquences économiques des crises en Ukraine et en Iran",
+  "qcmOnly": true,
+  "sections": [
+   {
+    "titre": "Compréhension du texte 2",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Depuis quelle année les tensions évoquées redessinent-elles les équilibres économiques mondiaux ?",
+      "o": [
+       "2008",
+       "2014",
+       "2022",
+       "2025"
+      ],
+      "a": 2,
+      "w": "Le texte commence par « Depuis 2022 »."
+     },
+     {
+      "t": "qcm",
+      "q": "Pourquoi la guerre en Ukraine a-t-elle perturbé les exportations mondiales de céréales ?",
+      "o": [
+       "Parce que l'Ukraine est l'un des principaux fournisseurs mondiaux de blé et de maïs",
+       "Parce que l'Ukraine importe la majorité de ses céréales",
+       "Parce que les céréales ukrainiennes sont de mauvaise qualité",
+       "Parce que les agriculteurs ont refusé d'exporter"
+      ],
+      "a": 0,
+      "w": "Le texte précise que l'Ukraine est l'un des principaux fournisseurs de blé et de maïs de la planète."
+     },
+     {
+      "t": "qcm",
+      "q": "Quels facteurs ont provoqué une hausse généralisée des prix de l'énergie ?",
+      "o": [
+       "La baisse de la demande et la fermeture de centrales",
+       "Les sanctions visant la Russie et les incertitudes autour du programme iranien",
+       "L'augmentation du nombre de voitures électriques",
+       "Les grèves dans le secteur pétrolier"
+      ],
+      "a": 1,
+      "w": "Ces deux facteurs ont entraîné des fluctuations sur les marchés pétroliers et gaziers."
+     },
+     {
+      "t": "qcm",
+      "q": "Qui souffre le plus de la hausse du coût de la vie malgré les mesures de soutien ?",
+      "o": [
+       "Les grandes entreprises",
+       "Les ménages les plus modestes",
+       "Les États exportateurs",
+       "Les investisseurs"
+      ],
+      "a": 1,
+      "w": "Le texte précise que les dispositifs de soutien peinent à compenser la hausse, « notamment pour les ménages les plus modestes »."
+     },
+     {
+      "t": "qcm",
+      "q": "Sur quoi ces crises ont-elles accéléré la réflexion de nombreux pays ?",
+      "o": [
+       "La réduction des salaires",
+       "La fermeture des frontières",
+       "La souveraineté économique et énergétique",
+       "La suppression de l'euro"
+      ],
+      "a": 2,
+      "w": "Cette réflexion pousse certains pays à diversifier leurs approvisionnements et à investir dans les énergies renouvelables."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est le ton de la conclusion du texte ?",
+      "o": [
+       "Triomphaliste : les crises sont résolues",
+       "Prudent : rien ne garantit que les ajustements suffiront",
+       "Alarmiste : l'effondrement est inévitable",
+       "Indifférent : l'auteur ne prend pas position"
+      ],
+      "a": 1,
+      "w": "La formule « Reste à savoir si ces ajustements suffiront » exprime une prudence."
+     },
+     {
+      "t": "vf",
+      "q": "D'après le texte, les effets de ces crises restent limités aux zones de conflit.",
+      "a": 1,
+      "w": "Faux : ils se répercutent sur les marchés de l'énergie, les chaînes d'approvisionnement et le pouvoir d'achat dans le monde entier."
+     },
+     {
+      "t": "vf",
+      "q": "Les mesures de soutien compensent entièrement la hausse du coût de la vie.",
+      "a": 1,
+      "w": "Faux : elles « peinent à compenser entièrement » cette hausse."
+     },
+     {
+      "t": "vf",
+      "q": "Certains pays cherchent à diversifier leurs sources d'approvisionnement.",
+      "a": 0,
+      "w": "Vrai : c'est l'une des conséquences de la réflexion sur la souveraineté économique et énergétique."
+     },
+     {
+      "t": "vf",
+      "q": "L'auteur affirme avec certitude que ces ajustements protégeront les économies de futurs chocs.",
+      "a": 1,
+      "w": "Faux : il se demande seulement si ces ajustements suffiront."
+     }
+    ]
+   },
+   {
+    "titre": "Vocabulaire",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Dans « loin de rester circonscrits aux zones de conflit », « circonscrits » signifie :",
+      "o": [
+       "Étendus à toute la planète",
+       "Limités à ces zones",
+       "Détruits par ces zones",
+       "Ignorés dans ces zones"
+      ],
+      "a": 1,
+      "w": "Circonscrit = limité à un espace précis."
+     },
+     {
+      "t": "qcm",
+      "q": "Que signifie « prémunir » ?",
+      "o": [
+       "Protéger à l'avance",
+       "Provoquer à l'avance",
+       "Oublier volontairement",
+       "Punir sévèrement"
+      ],
+      "a": 0,
+      "w": "Prémunir quelqu'un contre un risque, c'est le protéger avant que ce risque ne se produise."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est le nom correspondant au verbe « diversifier » ?",
+      "o": [
+       "La diversité",
+       "La diversion",
+       "La diversification",
+       "Le diversifié"
+      ],
+      "a": 2,
+      "w": "Diversifier → la diversification (nom d'action en -ation). « La diversité » est le nom de l'adjectif « divers »."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel verbe se combine naturellement avec « l'inflation » ?",
+      "o": [
+       "Alimenter",
+       "Planter",
+       "Cueillir",
+       "Réciter"
+      ],
+      "a": 0,
+      "w": "On alimente l'inflation, c'est-à-dire qu'on l'entretient et la renforce. C'est une collocation courante."
+     },
+     {
+      "t": "vf",
+      "q": "« Fluctuations » est synonyme de « stabilité ».",
+      "a": 1,
+      "w": "Faux : les fluctuations sont des variations, des oscillations ; la stabilité en est le contraire."
+     },
+     {
+      "t": "qcm",
+      "q": "Que désigne « la souveraineté » d'un pays ?",
+      "o": [
+       "Sa capacité à décider de manière indépendante",
+       "Sa richesse en pétrole",
+       "Son nombre d'habitants",
+       "Son système de transports"
+      ],
+      "a": 0,
+      "w": "La souveraineté est le pouvoir d'un État de décider par lui-même, sans dépendre d'un autre. Le texte parle de « souveraineté économique et énergétique »."
+     },
+     {
+      "t": "qcm",
+      "q": "Que désigne le mot « ménages » dans « le pouvoir d'achat de millions de ménages » ?",
+      "o": [
+       "Les foyers, c'est-à-dire les personnes vivant sous un même toit",
+       "Les entreprises",
+       "Les administrations",
+       "Les travaux de nettoyage"
+      ],
+      "a": 0,
+      "w": "En économie, un ménage est l'ensemble des personnes qui partagent un même logement et un même budget."
+     },
+     {
+      "t": "qcm",
+      "q": "Quel est le synonyme de « durable » dans « une inflation durable » ?",
+      "o": [
+       "Persistante",
+       "Passagère",
+       "Imprévisible",
+       "Modérée"
+      ],
+      "a": 0,
+      "w": "Durable = qui dure longtemps, donc persistant. Le contraire est « passager »."
+     }
+    ]
+   },
+   {
+    "titre": "Grammaire",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Discours indirect : « Elle a dit : “Je pars demain.” » → « Elle a dit qu'elle ___ le lendemain. »",
+      "o": [
+       "part",
+       "partira",
+       "était partie",
+       "partait"
+      ],
+      "a": 3,
+      "w": "Verbe introducteur au passé : le présent devient imparfait, et « demain » devient « le lendemain »."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Il ne reste plus ___ places disponibles. »",
+      "o": [
+       "des",
+       "de",
+       "les",
+       "de la"
+      ],
+      "a": 1,
+      "w": "Après une négation (ne… plus), l'article indéfini « des » devient « de »."
+     },
+     {
+      "t": "qcm",
+      "q": "Quelle est la nominalisation de « Le public prend conscience de l'urgence » ?",
+      "o": [
+       "La conscience prise du public de l'urgence",
+       "La prise de conscience de l'urgence par le public",
+       "Le prendre conscience du public",
+       "L'urgence de prendre le public"
+      ],
+      "a": 1,
+      "w": "« Prendre conscience » devient « la prise de conscience » ; le sujet est repris par « par le public »."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Bien que certains gouvernements ___ des mesures de soutien, la hausse du coût de la vie persiste. »",
+      "o": [
+       "ont mis",
+       "aient mis",
+       "auraient mis",
+       "mettent"
+      ],
+      "a": 1,
+      "w": "« Bien que » exige le subjonctif ; l'action est accomplie, on emploie donc le subjonctif passé : aient mis (auxiliaire avoir au subjonctif + participe passé)."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Il n'est guère surprenant que cette combinaison de facteurs ___ une inflation durable. »",
+      "o": [
+       "a alimenté",
+       "ait alimenté",
+       "alimentera",
+       "alimentait"
+      ],
+      "a": 1,
+      "w": "« Il n'est guère surprenant que » exprime un jugement et se construit avec le subjonctif ; l'action est passée : subjonctif passé « ait alimenté »."
+     },
+     {
+      "t": "qcm",
+      "q": "Complétez : « Les prix de l'énergie ont augmenté, ___ le pouvoir d'achat a diminué. »",
+      "o": [
+       "donc",
+       "bien que",
+       "quoique",
+       "afin que"
+      ],
+      "a": 0,
+      "w": "« Donc » exprime la conséquence. « Bien que », « quoique » (concession) et « afin que » (but) exigent le subjonctif et ne conviennent pas ici."
+     },
+     {
+      "t": "qcm",
+      "q": "Mettez à la voix passive : « Les sanctions ont perturbé les marchés. »",
+      "o": [
+       "Les marchés ont été perturbés par les sanctions.",
+       "Les marchés ont perturbé les sanctions.",
+       "Les marchés sont perturbés par les sanctions.",
+       "Les marchés avaient été perturbés par les sanctions."
+      ],
+      "a": 0,
+      "w": "Passé composé actif → passé composé passif : ont été perturbés ; le COD « les marchés » devient sujet et le participe s'accorde."
+     }
+    ]
+   },
+   {
+    "titre": "Conjugaison",
+    "questions": [
+     {
+      "t": "qcm",
+      "q": "Plus-que-parfait de « finir » : « Elle ___ son rapport avant la réunion. »",
+      "o": [
+       "a fini",
+       "finissait",
+       "avait fini",
+       "aurait fini"
+      ],
+      "a": 2,
+      "w": "Le plus-que-parfait se forme avec l'auxiliaire à l'imparfait + participe passé : elle avait fini."
+     },
+     {
+      "t": "qcm",
+      "q": "Passé composé de « se lever » : « Elles ___ tôt ce matin. »",
+      "o": [
+       "se sont levé",
+       "se sont levées",
+       "sont levées",
+       "s'ont levées"
+      ],
+      "a": 1,
+      "w": "Les verbes pronominaux se conjuguent avec être ; le participe s'accorde avec le sujet « elles » (COD « se »)."
+     },
+     {
+      "t": "qcm",
+      "q": "Futur simple d'« avoir » : « Nous ___ besoin d'aide. »",
+      "o": [
+       "avons",
+       "avions",
+       "aurons",
+       "aurions"
+      ],
+      "a": 2,
+      "w": "Avoir est irrégulier au futur : j'aurai, nous aurons."
+     },
+     {
+      "t": "qcm",
+      "q": "Conditionnel passé de « faire » : « Si j'avais pu, j'___ autrement. »",
+      "o": [
+       "ai fait",
+       "ferais",
+       "aurais fait",
+       "aurai fait"
+      ],
+      "a": 2,
+      "w": "Si + plus-que-parfait → conditionnel passé : auxiliaire au conditionnel (aurais) + participe passé (fait)."
+     },
+     {
+      "t": "qcm",
+      "q": "Futur simple d'« envoyer » : « Le gouvernement ___ de nouvelles aides. »",
+      "o": [
+       "enverra",
+       "envoiera",
+       "enverrait",
+       "envoyera"
+      ],
+      "a": 0,
+      "w": "Envoyer est irrégulier au futur (radical enverr-) : il enverra. « Enverrait » est un conditionnel."
+     }
+    ]
+   }
+  ]
+ }
+];
+
+function seededOrder(n, key){
+  let h = 2166136261;
+  for(const c of key){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  const arr = [...Array(n).keys()];
+  for(let i=n-1;i>0;i--){ h = Math.imul(h ^ (h>>>15), 2246822507) + i; const j = Math.abs(h) % (i+1); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+
+function buildQcmModule(mod, idx){
+  const wrap = el('div','module'+(idx===0?' active':''));
+  wrap.id = 'mod-'+mod.slug;
+
+  const banner = el('div','theme-banner');
+  banner.innerHTML = `<span class="badge">${mod.titre} · QCM</span><h2>${mod.theme}</h2>`;
+  wrap.appendChild(banner);
+
+  const total = mod.sections.reduce((a,s)=>a+s.questions.length,0);
+  const scoreBar = el('div','qcm-scorebar');
+  scoreBar.innerHTML = `<div>Score total : <span class="qcm-total">0</span> / ${total}</div>`;
+  const resetBtn = el('button','reveal-btn','Recommencer le QCM');
+  resetBtn.type = 'button';
+  scoreBar.appendChild(resetBtn);
+  wrap.appendChild(scoreBar);
+
+  const progress = el('div','progress');
+  mod.sections.forEach(()=>{ const seg=el('div','seg'); seg.innerHTML='<i></i>'; progress.appendChild(seg); });
+  wrap.appendChild(progress);
+
+  // état : state[si][qi] = index choisi (ou undefined)
+  const state = mod.sections.map(()=>({}));
+  const secScoreEls = [];
+
+  function refreshScores(){
+    let totalOk = 0;
+    mod.sections.forEach((sec, si)=>{
+      let ok = 0;
+      sec.questions.forEach((q,qi)=>{ if(state[si][qi] === q.a) ok++; });
+      totalOk += ok;
+      secScoreEls[si].textContent = ok + ' / ' + sec.questions.length;
+    });
+    scoreBar.querySelector('.qcm-total').textContent = totalOk;
+  }
+
+  mod.sections.forEach((sec, si)=>{
+    wrap.appendChild(buildBlock(si, sec.titre, body=>{
+      const head = el('div','qcm-sec-head','Score de la section : <span class="qcm-sec-score">0 / '+sec.questions.length+'</span>');
+      secScoreEls[si] = head.querySelector('.qcm-sec-score');
+      body.appendChild(head);
+
+      sec.questions.forEach((qq, qi)=>{
+        const opts = qq.t==='vf' ? ['Vrai','Faux'] : qq.o;
+        const key = mod.slug+'-q'+si+'-'+qi;
+        const order = qq.t==='vf' ? [0,1] : seededOrder(opts.length, key);
+        const box = el('div','qcm-q');
+        box.appendChild(el('div','qcm-qtext',
+          '<span class="qcm-tag '+qq.t+'">'+(qq.t==='vf'?'Vrai / Faux':'QCM')+'</span> '+(qi+1)+'. '+qq.q));
+        const list = el('div','qcm-opts'+(qq.t==='vf'?' vf':''));
+        const fb = el('div','qcm-fb');
+        const buttons = [];
+
+        function reveal(oi){            // oi = index d'origine de l'option choisie
+          state[si][qi] = oi;
+          buttons.forEach((b,pos)=>{
+            const orig = order[pos];
+            b.disabled = true;
+            if(orig === qq.a) b.classList.add('ok');
+            else if(orig === oi) b.classList.add('ko');
+          });
+          const good = (oi === qq.a);
+          fb.className = 'qcm-fb show ' + (good ? 'ok' : 'ko');
+          fb.innerHTML = '<div><strong>' + (good ? '✔ Bonne réponse !' : '✘ Réponse attendue : ' + opts[qq.a]) + '</strong></div>' +
+                         '<div class="qcm-why">ℹ ' + qq.w + '</div>';
+          fb.appendChild(makeSpeakBtn(opts[qq.a] + '. ' + qq.w));
+        }
+
+        order.forEach((orig, pos)=>{
+          const b = el('button','qcm-opt');
+          b.type = 'button';
+          b.innerHTML = '<span class="qcm-letter">'+(qq.t==='vf' ? (pos===0?'V':'F') : String.fromCharCode(65+pos))+'</span><span>'+opts[orig]+'</span>';
+          b.onclick = ()=>{
+            if(state[si][qi] !== undefined) return;
+            reveal(orig);
+            saveField(key, String(orig));
+            refreshScores();
+            const allDone = sec.questions.every((_,j)=>state[si][j] !== undefined);
+            if(allDone) markProgress(mod, si);
+          };
+          buttons.push(b);
+          list.appendChild(b);
+        });
+
+        const saved = loadField(key);
+        if(saved !== null && saved !== '' && !isNaN(parseInt(saved,10)) && parseInt(saved,10) < opts.length){
+          reveal(parseInt(saved,10));
+        }
+
+        box.appendChild(list);
+        box.appendChild(fb);
+        body.appendChild(box);
+      });
+    }, mod));
+  });
+
+  resetBtn.onclick = ()=>{
+    if(!confirm('Recommencer ce QCM depuis le début ? Vos réponses seront effacées.')) return;
+    mod.sections.forEach((s,si)=>s.questions.forEach((q,qi)=>{
+      try{ localStorage.removeItem(STORAGE_PREFIX + mod.slug+'-q'+si+'-'+qi); }catch(e){}
+    }));
+    try{ localStorage.removeItem(STORAGE_PREFIX + mod.slug+'-progress'); }catch(e){}
+    progressState[mod.slug] = new Set();
+    const fresh = buildQcmModule(mod, idx);
+    fresh.classList.add('active');
+    wrap.replaceWith(fresh);
+    applySavedProgress(mod);
+    window.scrollTo({top:0, behavior:'smooth'});
+  };
+
+  refreshScores();
+  return wrap;
+}
+
+const STORAGE_PREFIX = 'fleB2_';
+
+function saveField(id, value){
+  try{ localStorage.setItem(STORAGE_PREFIX + id, value); }catch(e){}
+}
+function loadField(id){
+  try{ return localStorage.getItem(STORAGE_PREFIX + id); }catch(e){ return null; }
+}
+
+const progressState = {};
+[...DATA, ...GRAMMAR_DATA, ...QCM_DATA].forEach(mod=>{
+  const raw = loadField(mod.slug+'-progress');
+  progressState[mod.slug] = new Set(raw ? JSON.parse(raw) : []);
+});
+
+function markProgress(mod, sectionIdx){
+  progressState[mod.slug] = progressState[mod.slug] || new Set();
+  progressState[mod.slug].add(sectionIdx);
+  saveField(mod.slug+'-progress', JSON.stringify([...progressState[mod.slug]]));
+  const wrap = document.getElementById('mod-'+mod.slug);
+  const segs = wrap.querySelectorAll('.progress .seg i');
+  segs.forEach((s,i)=>{ s.style.width = progressState[mod.slug].has(i) ? '100%' : '0%'; });
+}
+
+function applySavedProgress(mod){
+  const wrap = document.getElementById('mod-'+mod.slug);
+  const segs = wrap.querySelectorAll('.progress .seg i');
+  segs.forEach((s,i)=>{ s.style.width = progressState[mod.slug].has(i) ? '100%' : '0%'; });
+}
+
+function resetAllProgress(){
+  if(!confirm('Réinitialiser toute votre progression sur tous les modules ? Cette action est irréversible.')) return;
+  Object.keys(localStorage).filter(k=>k.startsWith(STORAGE_PREFIX)).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+// Build tabs + modules
+const tabsEl = document.getElementById('tabs');
+const modulesEl = document.getElementById('modules');
+const ALL_MODULES = [...DATA, ...GRAMMAR_DATA, ...QCM_DATA];
+ALL_MODULES.forEach((mod,i)=>{
+  const tab = el('div','tab'+(i===0?' active':''), mod.titre);
+  tab.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('mod-'+mod.slug).classList.add('active');
+  };
+  tabsEl.appendChild(tab);
+  modulesEl.appendChild(mod.qcmOnly ? buildQcmModule(mod,i) : mod.grammarOnly ? buildGrammarModule(mod,i) : buildModule(mod,i));
+  applySavedProgress(mod);
+});
+document.getElementById('resetBtn').onclick = resetAllProgress;
+addSpeakButtons(document);
+</script>
+</body>
+</html>
